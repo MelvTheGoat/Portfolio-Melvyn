@@ -632,6 +632,27 @@ section.tight { padding: 40px 0; }
   color: var(--slate);
 }
 
+/* ============================================================
+   Long-form post body
+   ============================================================ */
+.prose { max-width: 68ch; }
+.prose h2 {
+  font-size: clamp(1.3rem, 2.6vw, 1.6rem);
+  margin: 2.2em 0 0.6em;
+}
+.prose h2:first-child { margin-top: 0; }
+.prose p { color: var(--ink-soft); }
+.prose .flow { margin: 1.4em 0; }
+.prose ul { padding-left: 18px; }
+.prose li { margin-bottom: 12px; color: var(--ink-soft); }
+
+.project-hero .post-date {
+  display: block;
+  margin-bottom: 14px;
+}
+.post-card h3 a { color: var(--ink); }
+.post-card h3 a:hover { color: var(--calibration); text-decoration: none; }
+
 .also-live {
   margin: 20px 0 0;
   font-family: var(--font-mono);

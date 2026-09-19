@@ -171,6 +171,12 @@ PROJECTS = [
             "afterwards and never used for tuning immediately found four real bugs."
         ),
         "next": "Widen the prose-report evaluation well beyond 40 examples written in-house &mdash; the number that most needs an independent set behind it &mdash; and re-fit the threshold against a second month of real payments to check the 83:1 cost ratio holds outside the corpus it was drawn from.",
+        # Stack follows the repository and the live instance, which is what an
+        # interviewer can open. The CV additionally credits PyTorch, DuckDB and
+        # React; none of the three are in MelvTheGoat/Stack, where the scoring
+        # model is scikit-learn with Platt calibration, the review pages are
+        # Jinja, and the last extraction layer calls Claude. Railway and
+        # Postgres do check out (RECON_DATABASE_URL points SQLAlchemy at it).
         "stack": ["Python", "FastAPI", "SQLAlchemy", "PostgreSQL", "scikit-learn", "Pydantic", "Jinja", "Docker", "Railway", "Claude API"],
     },
     {
@@ -417,6 +423,9 @@ PROJECTS = [
             "are newer than the score."
         ),
         "next": "A real backtest against a held-out prior season. The projection's component weights are currently reasoned rather than fitted, and only a held-out season says whether it is good or merely sensible.",
+        # The repo also carries a render.yaml for an always-on paid instance,
+        # but the live site is the GitHub Actions + Pages path, so that is what
+        # is listed. Move the deployment and this entry moves with it.
         "stack": ["Python", "FastAPI", "PuLP / CBC", "SQLite", "React", "Docker", "GitHub Actions", "GitHub Pages"],
     },
     {
@@ -505,6 +514,234 @@ PROJECTS = [
         "stack": ["Python", "EconML", "CausalML", "LightGBM", "scikit-learn", "Experiment Design"],
     },
 ]
+
+# ---------------------------------------------------------------------------
+# Writing — each post is rendered to writing/<slug>.html and listed on
+# writing.html from this one list.
+# ---------------------------------------------------------------------------
+
+POSTS = [
+    {
+        "slug": "rag-refusal",
+        "title": "Building a RAG system that refuses on purpose",
+        "date": "19 September 2026",
+        "summary": (
+            "Hybrid retrieval, a citation guardrail that strips any marker the model cited but never "
+            "actually retrieved, and a refusal-correctness score of 0.40 that turned out to be measuring "
+            "the judge rather than the system."
+        ),
+        "lede": (
+            "A compliance assistant that answers every question is worse than one that answers most of "
+            "them. This is the reasoning behind the refusal mechanism in the "
+            "<a href=\"../projects/rag.html\">Nigerian Fintech Compliance RAG Assistant</a>, and what "
+            "happened when I tried to measure whether it worked."
+        ),
+        "body": """
+        <h2>The failure mode that matters here</h2>
+        <p>A retrieval-augmented system over CBN circulars and the NDPA has one job that outranks all
+        the others: when the corpus does not contain the answer, say so. A confident paraphrase of an
+        adjacent clause is not a partial success. Somebody acts on it, and the thing they act on has a
+        regulator attached.</p>
+
+        <p>That reframes refusal. It is not an error path bolted on at the end &mdash; it is a
+        first-class output with the same standing as an answer, which means it needs to be enforced in
+        more than one place and measured on its own terms.</p>
+
+        <h2>Enforced in three places, not one</h2>
+        <p>A refusal that lives only in the prompt is a suggestion. The system uses a sentinel token
+        carried through three layers that do not trust each other:</p>
+
+        <div class="flow">prompt      → emit the sentinel when context is insufficient
+guardrail   → a sentinel response never renders as prose
+evaluation  → the same sentinel is what the metric counts</div>
+
+        <p>The third one is the part that is easy to skip and expensive to skip. If the harness scores
+        refusals by looking for phrases like &ldquo;I don't know&rdquo;, then the metric and the system
+        disagree about what a refusal <em>is</em>, and every number after that is measuring the gap
+        between two definitions rather than the behaviour.</p>
+
+        <p>On top of that sits post-generation citation verification: every marker in the output is
+        checked against what retrieval actually returned, and any marker the model cited but never
+        retrieved is stripped. Models invent citations that look exactly like real ones. The only
+        reliable defence is to not take the model's word for what it read.</p>
+
+        <h2>Why reciprocal rank fusion instead of blending scores</h2>
+        <p>Retrieval is hybrid: BM25 for the terms a regulation actually uses &mdash; section numbers,
+        &ldquo;Tier 1&rdquo;, defined phrases &mdash; and dense embeddings served through ONNX for
+        everything phrased differently from the source.</p>
+
+        <p>The obvious way to combine them is to add the scores. It does not work. BM25 is unbounded
+        and will happily exceed 15 on a rare term; cosine similarity from a normalised embedder lives
+        in a narrow 0.3&ndash;0.7 band. Add them and BM25 wins every ranking, not because it is more
+        trustworthy but because its numbers are bigger.</p>
+
+        <p>Min-max normalisation looks like the fix and introduces a subtler bug: it is computed
+        per-query, so on a query where BM25 found nothing good, its best weak match gets rescaled to a
+        confident 1.0. The normalisation manufactures confidence out of an empty result set.</p>
+
+        <p>Reciprocal rank fusion sidesteps the whole problem by discarding the scores and keeping only
+        the ranks. Rank 1 means the same thing regardless of which retriever produced it. Against a
+        50-question labelled golden set the fused retriever reaches 0.96 recall@5 and 0.842 MRR, with
+        no question missing its answer entirely in the top 10.</p>
+
+        <h2>Chunking that cannot straddle a clause</h2>
+        <p>Chunking is where citation integrity is won or lost. A fixed-window chunker will happily
+        span the boundary between two clauses, and the moment it does, a citation points at a chunk
+        that belongs to two different rules. The answer might still be right; the attribution cannot
+        be.</p>
+
+        <p>So chunking is section-aware and never merges across a document's own structural
+        boundaries, which keeps every citation attributable to exactly one clause. That claim was then
+        checked against a structure-blind fixed-window baseline rather than asserted &mdash; the
+        cheapest way to find out that a principled-sounding design decision bought nothing is to build
+        the unprincipled version and compare.</p>
+
+        <h2>The number that was measuring the wrong thing</h2>
+        <p>Refusal correctness came back at 0.40. Four in ten. On the system's single most important
+        behaviour.</p>
+
+        <p>The instinct is to start tuning &mdash; a stricter prompt, a higher retrieval threshold. I
+        went looking for a specific failing case first, and found this one: a question about Kenyan
+        data-protection rules retrieved the NDPA's cross-border-transfer clause. The retrieval is
+        defensible; those texts genuinely share vocabulary. The system's own guardrail handled it. What
+        failed was the offline stub judge, which decides correctness by lexical overlap and therefore
+        reads real shared vocabulary as evidence that the question was answerable.</p>
+
+        <p>So 0.40 is a measurement of the stub, not of the deployed system. That distinction is the
+        whole result. It gets reported as a documented limitation of the offline harness, with
+        re-validation against a live provider named as the next step &mdash; rather than as a claim
+        about the real refusal rate in either direction. Reporting it as a system weakness would be
+        false; quietly dropping it because it looked bad would be worse.</p>
+
+        <h2>What the constraint bought</h2>
+        <p>The whole thing runs on GCP Cloud Run inside roughly a 225MB peak footprint against a 2GB
+        budget, with per-session and daily request caps enforced in application code so a public
+        endpoint cannot run up an API bill. ONNX instead of eager PyTorch, brute-force search instead
+        of a vector database, single-threaded inference: each one is a decision that a
+        memory-constrained target forced, and each one turned out to be simpler to operate than the
+        thing it replaced.</p>
+
+        <p>The useful lesson is not about memory. It is that a real constraint does the work an
+        architecture review is supposed to do &mdash; it deletes options before you get attached to
+        them.</p>
+        """,
+    },
+    {
+        "slug": "evaluate-before-you-model",
+        "title": "Why I evaluate before I model",
+        "date": "19 September 2026",
+        "summary": (
+            "Decide the metric and the split before training anything, build the honest baseline first "
+            "and report it even when it wins, and publish the number that did not flatter the project. "
+            "The argument running through all eight."
+        ),
+        "lede": (
+            "Every project on this site was built in the same order, and the order is the point. This "
+            "is the argument for it, made with the numbers that came out of following it &mdash; "
+            "including the ones I would rather not have had to write down."
+        ),
+        "body": """
+        <h2>The metric is a design decision, not a reporting decision</h2>
+        <p>Choosing a metric after training is choosing the metric that flatters what you already
+        built. Choosing it first is choosing what the system is for.</p>
+
+        <p>In <a href=\"../projects/credit-risk.html\">credit risk</a> that decision is calibration
+        over ranking, and it is not a preference. Expected loss is a probability multiplied by an
+        exposure. AUC tells you the applicants are in the right order; it says nothing about whether a
+        stated 8% default probability corresponds to an 8% real-world rate. A model can have an
+        excellent AUC and produce confidently wrong loss estimates that look statistically sound right
+        up until somebody checks them against reality. So the benchmark against a WOE-binned logistic
+        scorecard was run on Brier score, reliability diagrams and expected calibration error, and the
+        model with the better AUC was not automatically the one that shipped.</p>
+
+        <p>In <a href=\"../projects/forecasting.html\">demand forecasting</a> the same reasoning lands
+        somewhere different. Unmet demand and idle supply do not cost the same, so a symmetric error
+        metric optimises the wrong thing. Modelling unmet demand at 3&times; idle supply and shipping
+        the cost-optimal quantile rather than the median cut expected cost by 25% on an
+        <em>identical</em> model. Nothing about the model improved. The objective stopped being a
+        proxy.</p>
+
+        <h2>Build the honest baseline first, and report it when it wins</h2>
+        <p>A baseline built after the model exists is built to lose. Built first, it is the thing that
+        tells you whether the complicated version is worth operating.</p>
+
+        <p>The <a href=\"../projects/fraud.html\">fraud project</a> is where this bit hardest. Three
+        deep sequence architectures &mdash; GRU, temporal convolutional network, causally-masked
+        Transformer &mdash; against a LightGBM baseline on engineered velocity and deviation features.
+        The headline is that the sequence models cut expected cost per transaction by 27% under an
+        explicit cost model. The honest version is that pre-drift, gradient boosting was marginally
+        ahead: 0.956 against 0.950 PR-AUC, which is a tie.</p>
+
+        <p>The entire 27% comes from robustness once the fraud pattern shifts. Reporting only the
+        headline would be true and misleading, because it implies the sequence models are simply
+        better. The pre-drift tie is what locates <em>why</em> they win, and it changes the
+        recommendation: this is an argument for sequence models in a non-stationary threat environment
+        specifically, not a general claim that deep learning wins.</p>
+
+        <p>The same discipline shows up in the <a href=\"../projects/premier-league.html\">match
+        predictor</a>, where 52.1% outcome accuracy means very little on its own and quite a lot next
+        to the 43.2% you get by always backing the home side, and next to a tuned Elo-only baseline's
+        log loss of 1.0061 against the model's 0.9948.</p>
+
+        <h2>Report the negative result</h2>
+        <p>This is the part that costs something, and it is the part that makes the rest of a portfolio
+        readable.</p>
+
+        <p>The <a href=\"../projects/uplift.html\">uplift study</a> ran a placebo test &mdash; assign a
+        fake treatment, see whether the model finds an effect anyway &mdash; and the ranking came back
+        indistinguishable from noise on the primary arm. That is the test that tells you whether an
+        uplift model is finding signal or an artifact of the estimator, and it is reported, because a
+        decision memo that hides its own estimator's failure mode is worse than useless to whoever has
+        to act on it.</p>
+
+        <p>The <a href=\"../projects/fpl.html\">FPL models</a> are currently 0 for 4 against the game's
+        own average. That sits on the project page, in the results section, unhedged. The 25-point gap
+        between the constrained manager and the unconstrained weekly rebuild is the measurement the
+        project exists to take; the fact that neither has beaten the average yet is a small sample and
+        also not noise-free good news, and it gets written down as both.</p>
+
+        <p>And in <a href=\"../projects/reckon.html\">Reckon</a>, the prose-intake layer reads 94.4% of
+        40 hand-labelled payment reports correctly &mdash; reports written by the same person who wrote
+        the parser. The honest description is &ldquo;it has not failed on these yet&rdquo;, not an
+        accuracy rate. The ten written afterwards and never used for tuning immediately found four real
+        bugs, which is exactly what you would predict and exactly why the number is framed that
+        way.</p>
+
+        <h2>Make the guardrail structural</h2>
+        <p>Every rule above is a rule somebody has to remember. The ones that survive contact with a
+        deadline are the ones a system enforces on your behalf.</p>
+
+        <ul class="cv-points">
+          <li><strong>Forecasting:</strong> automated leakage tests fail the build if any feature reads
+          past the forecast origin. Leakage produces backtests that look excellent and fail silently;
+          a test that fails the build is the only version of that check that keeps working when you are
+          busy.</li>
+          <li><strong>FPL:</strong> writing picks for a gameweek that already has them raises an error
+          rather than overwriting. Regenerating a past gameweek with hindsight would quietly invalidate
+          every result after it, and the output would still look fine.</li>
+          <li><strong>Match prediction:</strong> the feature table is built in one strictly
+          chronological pass, so a feature <em>cannot</em> read a result that has not been fed in yet.
+          The guarantee is structural rather than a matter of remembering to filter.</li>
+          <li><strong>Reckon:</strong> the close/review threshold is computed from two cost constants
+          &mdash; &#8358;60 to check a match that was fine, &#8358;5,000 to close one that was wrong.
+          Change the costs and the line moves on its own, instead of a number chosen by eye drifting
+          out of date in silence.</li>
+        </ul>
+
+        <h2>Why two of these are football projects</h2>
+        <p>A portfolio project can be tuned until the backtest looks good and nobody ever finds out.
+        That is the structural weakness of the whole genre, mine included.</p>
+
+        <p>Football does not allow it. The match predictor publishes probabilities before kick-off and
+        never edits them; the FPL models lock a squad before each deadline and refuse to regenerate a
+        past gameweek at all. Both keep a public record that is free to disagree with them, and one of
+        them currently does. That is the strongest evidence I can offer that the evaluation discipline
+        on the rest of this site is real rather than retrospective &mdash; and it is the reason those
+        two projects are here at all.</p>
+        """,
+    },
+]
+
 
 # ---------------------------------------------------------------------------
 # CV data — education, experience, skills and certificates, straight from the
@@ -881,6 +1118,17 @@ def build_project_page(p, idx):
 # ---------------------------------------------------------------------------
 
 def build_writing():
+    cards = ""
+    for p in POSTS:
+        cards += f"""
+        <div class="post-card">
+          <span class="post-date">{p['date']}</span>
+          <h3><a href="writing/{p['slug']}.html">{p['title']}</a></h3>
+          <p>{p['summary']}</p>
+          <a class="card-link" href="writing/{p['slug']}.html">Read the full post &rarr;</a>
+        </div>
+"""
+
     body = f"""  <main>
     <section class="tight">
       <div class="wrap">
@@ -891,33 +1139,11 @@ def build_writing():
       </div>
     </section>
     <section class="tight">
-      <div class="wrap">
-
-        <div class="post-card">
-          <h3>Building a RAG system that refuses on purpose</h3>
-          <p>Hybrid retrieval, the citation guardrail that strips any marker the model cited but never
-          actually retrieved, and the refusal-correctness number that came back at 0.40 &mdash; and
-          what tracing it to the offline stub judge, rather than to the system, actually took.</p>
-          <span class="post-date">In progress &mdash; the project it covers is
-          <a href="projects/rag.html">written up here</a> in the meantime.</span>
-        </div>
-
-        <div class="post-card">
-          <h3>Why I evaluate before I model</h3>
-          <p>The argument running through every project on this site: decide the metric and the split
-          before training anything, build the honest baseline first and report it even when it wins,
-          and publish the number that didn't flatter the project &mdash; the placebo test that came
-          back null, the pre-drift tie, the four gameweeks that missed the average.</p>
-          <span class="post-date">In progress &mdash; the pattern is visible across
-          <a href="projects.html">all eight projects</a> already.</span>
-        </div>
-
+      <div class="wrap">{cards}
         <div class="empty-note">
-          Nothing published yet. These two are drafted and will be linked here when they go up &mdash;
-          until then, each project page carries the same reasoning in full, including the sections on
-          what the results actually showed.
+          More as each project's evaluation work matures. Every project page carries the same
+          reasoning in full, including the section on what the results actually showed.
         </div>
-
       </div>
     </section>
   </main>
@@ -926,6 +1152,43 @@ def build_writing():
         f"Writing &mdash; {NAME}",
         "Notes on evaluation, calibration, and building ML/AI systems that report their own limitations honestly.",
         "writing", body,
+    )
+
+
+def build_post_page(p, idx):
+    others = [q for q in POSTS if q["slug"] != p["slug"]]
+    more = ""
+    if others:
+        q = others[0]
+        more = f"""
+    <div class="wrap">
+      <div class="next-project">
+        <span class="eyebrow" style="margin-bottom:0;">Next post</span>
+        <a href="{q['slug']}.html">{q['title']} &rarr;</a>
+      </div>
+    </div>"""
+
+    body = f"""  <main>
+    <section class="project-hero">
+      <div class="wrap">
+        <span class="post-date">{p['date']}</span>
+        <h1>{p['title']}</h1>
+        <p class="subtitle">{p['lede']}</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <div class="prose">{p['body'].strip()}</div>
+      </div>
+    </section>
+{more}
+  </main>
+"""
+    return page(
+        f"{p['title']} &mdash; {NAME}",
+        p['summary'],
+        "writing", body, depth="../",
     )
 
 
@@ -1181,6 +1444,8 @@ def main():
     write("contact.html", build_contact())
     for i, p in enumerate(PROJECTS):
         write(f"projects/{p['slug']}.html", build_project_page(p, i))
+    for i, p in enumerate(POSTS):
+        write(f"writing/{p['slug']}.html", build_post_page(p, i))
     print("\nDone. Open index.html in a browser, or deploy the whole folder as-is.")
 
 

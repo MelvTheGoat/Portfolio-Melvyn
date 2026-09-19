@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building a RAG system that refuses on purpose &mdash; Mayungbo Oluwatobi Melvyn</title>
+  <meta name="description" content="Hybrid retrieval, a citation guardrail that strips any marker the model cited but never actually retrieved, and a refusal-correctness score of 0.40 that turned out to be measuring the judge rather than the system.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="wrap">
+      <a class="brand" href="../index.html">Mayungbo<span class="dot">.</span>ml</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../projects.html">Projects</a></li>
+        <li><a href="../writing.html" aria-current="page">Writing</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Resume</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="project-hero">
+      <div class="wrap">
+        <span class="post-date">19 September 2026</span>
+        <h1>Building a RAG system that refuses on purpose</h1>
+        <p class="subtitle">A compliance assistant that answers every question is worse than one that answers most of them. This is the reasoning behind the refusal mechanism in the <a href="../projects/rag.html">Nigerian Fintech Compliance RAG Assistant</a>, and what happened when I tried to measure whether it worked.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <div class="prose"><h2>The failure mode that matters here</h2>
+        <p>A retrieval-augmented system over CBN circulars and the NDPA has one job that outranks all
+        the others: when the corpus does not contain the answer, say so. A confident paraphrase of an
+        adjacent clause is not a partial success. Somebody acts on it, and the thing they act on has a
+        regulator attached.</p>
+
+        <p>That reframes refusal. It is not an error path bolted on at the end &mdash; it is a
+        first-class output with the same standing as an answer, which means it needs to be enforced in
+        more than one place and measured on its own terms.</p>
+
+        <h2>Enforced in three places, not one</h2>
+        <p>A refusal that lives only in the prompt is a suggestion. The system uses a sentinel token
+        carried through three layers that do not trust each other:</p>
+
+        <div class="flow">prompt      → emit the sentinel when context is insufficient
+guardrail   → a sentinel response never renders as prose
+evaluation  → the same sentinel is what the metric counts</div>
+
+        <p>The third one is the part that is easy to skip and expensive to skip. If the harness scores
+        refusals by looking for phrases like &ldquo;I don't know&rdquo;, then the metric and the system
+        disagree about what a refusal <em>is</em>, and every number after that is measuring the gap
+        between two definitions rather than the behaviour.</p>
+
+        <p>On top of that sits post-generation citation verification: every marker in the output is
+        checked against what retrieval actually returned, and any marker the model cited but never
+        retrieved is stripped. Models invent citations that look exactly like real ones. The only
+        reliable defence is to not take the model's word for what it read.</p>
+
+        <h2>Why reciprocal rank fusion instead of blending scores</h2>
+        <p>Retrieval is hybrid: BM25 for the terms a regulation actually uses &mdash; section numbers,
+        &ldquo;Tier 1&rdquo;, defined phrases &mdash; and dense embeddings served through ONNX for
+        everything phrased differently from the source.</p>
+
+        <p>The obvious way to combine them is to add the scores. It does not work. BM25 is unbounded
+        and will happily exceed 15 on a rare term; cosine similarity from a normalised embedder lives
+        in a narrow 0.3&ndash;0.7 band. Add them and BM25 wins every ranking, not because it is more
+        trustworthy but because its numbers are bigger.</p>
+
+        <p>Min-max normalisation looks like the fix and introduces a subtler bug: it is computed
+        per-query, so on a query where BM25 found nothing good, its best weak match gets rescaled to a
+        confident 1.0. The normalisation manufactures confidence out of an empty result set.</p>
+
+        <p>Reciprocal rank fusion sidesteps the whole problem by discarding the scores and keeping only
+        the ranks. Rank 1 means the same thing regardless of which retriever produced it. Against a
+        50-question labelled golden set the fused retriever reaches 0.96 recall@5 and 0.842 MRR, with
+        no question missing its answer entirely in the top 10.</p>
+
+        <h2>Chunking that cannot straddle a clause</h2>
+        <p>Chunking is where citation integrity is won or lost. A fixed-window chunker will happily
+        span the boundary between two clauses, and the moment it does, a citation points at a chunk
+        that belongs to two different rules. The answer might still be right; the attribution cannot
+        be.</p>
+
+        <p>So chunking is section-aware and never merges across a document's own structural
+        boundaries, which keeps every citation attributable to exactly one clause. That claim was then
+        checked against a structure-blind fixed-window baseline rather than asserted &mdash; the
+        cheapest way to find out that a principled-sounding design decision bought nothing is to build
+        the unprincipled version and compare.</p>
+
+        <h2>The number that was measuring the wrong thing</h2>
+        <p>Refusal correctness came back at 0.40. Four in ten. On the system's single most important
+        behaviour.</p>
+
+        <p>The instinct is to start tuning &mdash; a stricter prompt, a higher retrieval threshold. I
+        went looking for a specific failing case first, and found this one: a question about Kenyan
+        data-protection rules retrieved the NDPA's cross-border-transfer clause. The retrieval is
+        defensible; those texts genuinely share vocabulary. The system's own guardrail handled it. What
+        failed was the offline stub judge, which decides correctness by lexical overlap and therefore
+        reads real shared vocabulary as evidence that the question was answerable.</p>
+
+        <p>So 0.40 is a measurement of the stub, not of the deployed system. That distinction is the
+        whole result. It gets reported as a documented limitation of the offline harness, with
+        re-validation against a live provider named as the next step &mdash; rather than as a claim
+        about the real refusal rate in either direction. Reporting it as a system weakness would be
+        false; quietly dropping it because it looked bad would be worse.</p>
+
+        <h2>What the constraint bought</h2>
+        <p>The whole thing runs on GCP Cloud Run inside roughly a 225MB peak footprint against a 2GB
+        budget, with per-session and daily request caps enforced in application code so a public
+        endpoint cannot run up an API bill. ONNX instead of eager PyTorch, brute-force search instead
+        of a vector database, single-threaded inference: each one is a decision that a
+        memory-constrained target forced, and each one turned out to be simpler to operate than the
+        thing it replaced.</p>
+
+        <p>The useful lesson is not about memory. It is that a real constraint does the work an
+        architecture review is supposed to do &mdash; it deletes options before you get attached to
+        them.</p></div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="next-project">
+        <span class="eyebrow" style="margin-bottom:0;">Next post</span>
+        <a href="evaluate-before-you-model.html">Why I evaluate before I model &rarr;</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span class="copy">&copy; 2026 Mayungbo Oluwatobi Melvyn &mdash; built with calibration in mind.</span>
+      <div class="foot-links">
+        <a href="mailto:mlvyn.t@gmail.com">Email</a>
+        <a href="https://github.com/MelvTheGoat" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://linkedin.com/in/oluwatobi-mayungbo-3a567026b" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+  <script src="../js/main.js"></script>
+
+</body>
+</html>

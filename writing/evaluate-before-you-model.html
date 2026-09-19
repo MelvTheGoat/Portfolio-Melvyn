@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why I evaluate before I model &mdash; Mayungbo Oluwatobi Melvyn</title>
+  <meta name="description" content="Decide the metric and the split before training anything, build the honest baseline first and report it even when it wins, and publish the number that did not flatter the project. The argument running through all eight.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="wrap">
+      <a class="brand" href="../index.html">Mayungbo<span class="dot">.</span>ml</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../projects.html">Projects</a></li>
+        <li><a href="../writing.html" aria-current="page">Writing</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Resume</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="project-hero">
+      <div class="wrap">
+        <span class="post-date">19 September 2026</span>
+        <h1>Why I evaluate before I model</h1>
+        <p class="subtitle">Every project on this site was built in the same order, and the order is the point. This is the argument for it, made with the numbers that came out of following it &mdash; including the ones I would rather not have had to write down.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <div class="prose"><h2>The metric is a design decision, not a reporting decision</h2>
+        <p>Choosing a metric after training is choosing the metric that flatters what you already
+        built. Choosing it first is choosing what the system is for.</p>
+
+        <p>In <a href="../projects/credit-risk.html">credit risk</a> that decision is calibration
+        over ranking, and it is not a preference. Expected loss is a probability multiplied by an
+        exposure. AUC tells you the applicants are in the right order; it says nothing about whether a
+        stated 8% default probability corresponds to an 8% real-world rate. A model can have an
+        excellent AUC and produce confidently wrong loss estimates that look statistically sound right
+        up until somebody checks them against reality. So the benchmark against a WOE-binned logistic
+        scorecard was run on Brier score, reliability diagrams and expected calibration error, and the
+        model with the better AUC was not automatically the one that shipped.</p>
+
+        <p>In <a href="../projects/forecasting.html">demand forecasting</a> the same reasoning lands
+        somewhere different. Unmet demand and idle supply do not cost the same, so a symmetric error
+        metric optimises the wrong thing. Modelling unmet demand at 3&times; idle supply and shipping
+        the cost-optimal quantile rather than the median cut expected cost by 25% on an
+        <em>identical</em> model. Nothing about the model improved. The objective stopped being a
+        proxy.</p>
+
+        <h2>Build the honest baseline first, and report it when it wins</h2>
+        <p>A baseline built after the model exists is built to lose. Built first, it is the thing that
+        tells you whether the complicated version is worth operating.</p>
+
+        <p>The <a href="../projects/fraud.html">fraud project</a> is where this bit hardest. Three
+        deep sequence architectures &mdash; GRU, temporal convolutional network, causally-masked
+        Transformer &mdash; against a LightGBM baseline on engineered velocity and deviation features.
+        The headline is that the sequence models cut expected cost per transaction by 27% under an
+        explicit cost model. The honest version is that pre-drift, gradient boosting was marginally
+        ahead: 0.956 against 0.950 PR-AUC, which is a tie.</p>
+
+        <p>The entire 27% comes from robustness once the fraud pattern shifts. Reporting only the
+        headline would be true and misleading, because it implies the sequence models are simply
+        better. The pre-drift tie is what locates <em>why</em> they win, and it changes the
+        recommendation: this is an argument for sequence models in a non-stationary threat environment
+        specifically, not a general claim that deep learning wins.</p>
+
+        <p>The same discipline shows up in the <a href="../projects/premier-league.html">match
+        predictor</a>, where 52.1% outcome accuracy means very little on its own and quite a lot next
+        to the 43.2% you get by always backing the home side, and next to a tuned Elo-only baseline's
+        log loss of 1.0061 against the model's 0.9948.</p>
+
+        <h2>Report the negative result</h2>
+        <p>This is the part that costs something, and it is the part that makes the rest of a portfolio
+        readable.</p>
+
+        <p>The <a href="../projects/uplift.html">uplift study</a> ran a placebo test &mdash; assign a
+        fake treatment, see whether the model finds an effect anyway &mdash; and the ranking came back
+        indistinguishable from noise on the primary arm. That is the test that tells you whether an
+        uplift model is finding signal or an artifact of the estimator, and it is reported, because a
+        decision memo that hides its own estimator's failure mode is worse than useless to whoever has
+        to act on it.</p>
+
+        <p>The <a href="../projects/fpl.html">FPL models</a> are currently 0 for 4 against the game's
+        own average. That sits on the project page, in the results section, unhedged. The 25-point gap
+        between the constrained manager and the unconstrained weekly rebuild is the measurement the
+        project exists to take; the fact that neither has beaten the average yet is a small sample and
+        also not noise-free good news, and it gets written down as both.</p>
+
+        <p>And in <a href="../projects/reckon.html">Reckon</a>, the prose-intake layer reads 94.4% of
+        40 hand-labelled payment reports correctly &mdash; reports written by the same person who wrote
+        the parser. The honest description is &ldquo;it has not failed on these yet&rdquo;, not an
+        accuracy rate. The ten written afterwards and never used for tuning immediately found four real
+        bugs, which is exactly what you would predict and exactly why the number is framed that
+        way.</p>
+
+        <h2>Make the guardrail structural</h2>
+        <p>Every rule above is a rule somebody has to remember. The ones that survive contact with a
+        deadline are the ones a system enforces on your behalf.</p>
+
+        <ul class="cv-points">
+          <li><strong>Forecasting:</strong> automated leakage tests fail the build if any feature reads
+          past the forecast origin. Leakage produces backtests that look excellent and fail silently;
+          a test that fails the build is the only version of that check that keeps working when you are
+          busy.</li>
+          <li><strong>FPL:</strong> writing picks for a gameweek that already has them raises an error
+          rather than overwriting. Regenerating a past gameweek with hindsight would quietly invalidate
+          every result after it, and the output would still look fine.</li>
+          <li><strong>Match prediction:</strong> the feature table is built in one strictly
+          chronological pass, so a feature <em>cannot</em> read a result that has not been fed in yet.
+          The guarantee is structural rather than a matter of remembering to filter.</li>
+          <li><strong>Reckon:</strong> the close/review threshold is computed from two cost constants
+          &mdash; &#8358;60 to check a match that was fine, &#8358;5,000 to close one that was wrong.
+          Change the costs and the line moves on its own, instead of a number chosen by eye drifting
+          out of date in silence.</li>
+        </ul>
+
+        <h2>Why two of these are football projects</h2>
+        <p>A portfolio project can be tuned until the backtest looks good and nobody ever finds out.
+        That is the structural weakness of the whole genre, mine included.</p>
+
+        <p>Football does not allow it. The match predictor publishes probabilities before kick-off and
+        never edits them; the FPL models lock a squad before each deadline and refuse to regenerate a
+        past gameweek at all. Both keep a public record that is free to disagree with them, and one of
+        them currently does. That is the strongest evidence I can offer that the evaluation discipline
+        on the rest of this site is real rather than retrospective &mdash; and it is the reason those
+        two projects are here at all.</p></div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="next-project">
+        <span class="eyebrow" style="margin-bottom:0;">Next post</span>
+        <a href="rag-refusal.html">Building a RAG system that refuses on purpose &rarr;</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span class="copy">&copy; 2026 Mayungbo Oluwatobi Melvyn &mdash; built with calibration in mind.</span>
+      <div class="foot-links">
+        <a href="mailto:mlvyn.t@gmail.com">Email</a>
+        <a href="https://github.com/MelvTheGoat" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://linkedin.com/in/oluwatobi-mayungbo-3a567026b" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+  <script src="../js/main.js"></script>
+
+</body>
+</html>
