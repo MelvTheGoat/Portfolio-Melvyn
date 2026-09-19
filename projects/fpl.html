@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FPL AI Manager &mdash; Mayungbo Oluwatobi Melvyn</title>
+  <meta name="description" content="Two models play the 2026/27 Fantasy Premier League season side by side &mdash; one under the real constraints, one with perfect freedom &mdash; to measure what continuity actually costs. Scored with real FPL points against the official gameweek average.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="wrap">
+      <a class="brand" href="../index.html">Mayungbo<span class="dot">.</span>ml</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../projects.html" aria-current="page">Projects</a></li>
+        <li><a href="../writing.html">Writing</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Resume</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="project-hero">
+      <div class="wrap">
+        <div class="tags">
+          <span class="tag">Optimization</span><span class="tag">Sequential Decisions</span><span class="tag">No-Leakage</span><span class="tag">Live Season</span>
+        </div>
+        <h1>FPL AI Manager</h1>
+        <p class="subtitle">Two models play the 2026/27 Fantasy Premier League season side by side &mdash; one under the real constraints, one with perfect freedom &mdash; to measure what continuity actually costs. Scored with real FPL points against the official gameweek average.</p>
+        <div class="meta-row">
+          
+          <a class="btn" href="https://github.com/MelvTheGoat/Fantasy-Premier-League" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">01</span>The problem</h2>
+        <p>Every FPL manager pays for continuity &mdash; one free transfer a week, &minus;4 for each extra, and a squad in January shaped by what was bought in August &mdash; and nobody can see the bill, because you only ever get to play one of the two possible seasons. <strong>The Manager</strong> carries one squad all year under the real constraints; <strong>Best XI of the Week</strong> rebuilds the best legal squad from scratch every gameweek. They are not competing. The gap between them is the measurement.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">02</span>The result</h2>
+        <div class="result-banner">
+          <div class="eyebrow">Headline number</div>
+          <p>Both models are scored with real FPL points pulled from the API and never recalculated, tracked against the official gameweek average &mdash; the same yardstick every human manager is measured by. Nothing is graded against a simulation of itself. 574 tests, weighted toward the rules engine and the projection, where a silent error does the most damage.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">03</span>Architecture</h2>
+        <div class="flow">FPL API (cached, rate-limited) → rules engine as pure logic → component-built expected points
+  → ILP squad + lineup + captaincy optimiser (PuLP/CBC)
+  → Best XI (one gameweek) vs The Manager (transfers, hits, chips) → locked picks, never regenerated</div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">04</span>The hardest decision</h2>
+        <div class="decision-block">
+          <h4>The no-leakage rule is enforced by the schema, not by discipline</h4>
+          <p>The season was already under way, so gameweek 1 onward had to be reconstructed &mdash; and a reconstruction that peeks is worse than no reconstruction, because it still looks fine. Three structures carry the rule: prices are snapshotted per gameweek so a GW7 decision is costed at GW7 prices; projections are keyed by the deadline they were made before; and writing picks for a gameweek that already has them <em>raises</em> rather than overwrites. That last refusal is the load-bearing one &mdash; regenerating a past gameweek with hindsight would quietly invalidate every result after it. The one honest leak is stated outright: backfilled gameweeks read injury status as it is now, because the API does not publish its history.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">05</span>What the results actually showed</h2>
+        <div class="measured-box">
+          <div class="eyebrow">Measured, not assumed</div>
+          <p>After the first four gameweeks: the Manager on 171 points, Best XI on 196 &mdash; the 25-point gap the project exists to measure &mdash; and, less comfortably, <em>neither model has beaten the FPL average yet</em> (0/4 each). Small sample, but that is reported as it stands rather than explained away. Four bugs also reached the published site, and all four shared one shape worth naming: <strong>they produced plausible output instead of an error.</strong> A season published as zeros reads as a season that went badly, not as a broken deployment &mdash; which is why setup stages now gate on results before picks, and why stale-score detection re-scores whenever the results behind a score are newer than the score.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">06</span>What's next</h2>
+        <p>A real backtest against a held-out prior season. The projection's component weights are currently reasoned rather than fitted, and only a held-out season says whether it is good or merely sensible.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">07</span>Stack</h2>
+        <div class="stack-tags">
+          <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">PuLP / CBC</span><span class="tag">SQLite</span><span class="tag">React</span><span class="tag">Docker</span><span class="tag">GitHub Actions</span><span class="tag">Render</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="next-project">
+        <span class="eyebrow" style="margin-bottom:0;">Next project</span>
+        <a href="forecasting.html">Self-Operating Demand Forecasting Platform &rarr;</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span class="copy">&copy; 2026 Mayungbo Oluwatobi Melvyn &mdash; built with calibration in mind.</span>
+      <div class="foot-links">
+        <a href="mailto:mlvyn.t@gmail.com">Email</a>
+        <a href="https://github.com/MelvTheGoat" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://linkedin.com/in/oluwatobi-mayungbo-3a567026b" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+  <script src="../js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reckon &mdash; Payment Reconciliation &amp; Review System &mdash; Mayungbo Oluwatobi Melvyn</title>
+  <meta name="description" content="Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="wrap">
+      <a class="brand" href="../index.html">Mayungbo<span class="dot">.</span>ml</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../projects.html" aria-current="page">Projects</a></li>
+        <li><a href="../writing.html">Writing</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Resume</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="project-hero">
+      <div class="wrap">
+        <div class="tags">
+          <span class="tag">Payments</span><span class="tag">Calibration</span><span class="tag">Human-in-the-loop</span><span class="tag">FastAPI</span>
+        </div>
+        <h1>Reckon &mdash; Payment Reconciliation &amp; Review System</h1>
+        <p class="subtitle">Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira.</p>
+        <div class="meta-row">
+          
+          <a class="btn" href="https://github.com/MelvTheGoat/Stack" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">01</span>The problem</h2>
+        <p>Money arrives through card, dedicated virtual accounts, bank transfer and cash, and most of it does not say what it is for &mdash; a bank credit reads <span class="mono">NIP/GTB/OKONKWO ADA/PAYMENT</span> and nothing more. Somebody sits down every evening and matches payments to invoices by hand, and it fails the same ways every time: the name is spelled differently, somebody underpaid, one transfer covers three invoices, the same payment was entered twice, or two invoices are for the same amount and either one fits.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">02</span>The result</h2>
+        <div class="result-banner">
+          <div class="eyebrow">Headline number</div>
+          <p>On 439 payments over one month worth &#8358;37,181,750: 76.1% closed without a person &mdash; rules 69.9%, the model 6.2% &mdash; at 100% precision on that corpus and 80.1% recall. Not one duplicate and not one payment from a stranger was closed unattended. The 105 cases that do reach a person are the part payments, overpayments, splits and duplicates, which is the correct answer for them rather than a failure.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">03</span>Architecture</h2>
+        <div class="flow">payment in → duplicate check → three exact rules (our reference / dedicated account / amount + time window)
+  → scored candidates (name, amount, timing, channel, payer history) → Platt-calibrated probability
+  → close above 0.85, otherwise → review queue ranked by money at risk</div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">04</span>The hardest decision</h2>
+        <div class="decision-block">
+          <h4>Where the 0.85 threshold came from, and why it was not chosen by eye</h4>
+          <p>The two mistakes cost different amounts. Checking a match that was fine anyway costs &#8358;60 &mdash; three minutes of a bookkeeper's time. Closing a match that was wrong costs about &#8358;5,000: two hours to notice, trace and reverse it, plus chasing a customer for money they had already paid. That is 83 to 1, which means unattended closing only pays if it is wrong less than roughly 1.2% of the time &mdash; and that is what puts the line at 0.85 and holds the model to 6% of the month. Six percent that is right beats twenty percent that is mostly right. Change the two cost constants and the line moves on its own.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">05</span>What the results actually showed</h2>
+        <div class="measured-box">
+          <div class="eyebrow">Measured, not assumed</div>
+          <p>A threshold policy is only as good as the probability behind it, so the scores were calibrated and then checked on 390 candidate comparisons the model never trained on: Brier 0.0219, expected calibration error 0.024. Platt scaling and isotonic regression were both fitted and compared &mdash; Platt won, and both beat leaving the raw scores alone (0.093 &rarr; 0.052). The prose-intake layer is reported separately and deliberately under-claimed: 94.4% of 40 hand-labelled payment reports read completely right, but they were written by the same person who wrote the parser, so the honest description is &ldquo;it has not failed on these yet&rdquo;, not an accuracy rate. The ten written afterwards and never used for tuning immediately found four real bugs.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">06</span>What's next</h2>
+        <p>Stand up the public instance documented in docs/DEPLOY.md, and widen the prose-report evaluation well beyond 40 examples written in-house &mdash; the number that most needs an independent set behind it.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">07</span>Stack</h2>
+        <div class="stack-tags">
+          <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">SQLAlchemy</span><span class="tag">scikit-learn</span><span class="tag">Pydantic</span><span class="tag">Jinja</span><span class="tag">Docker</span><span class="tag">GCP Cloud Run</span><span class="tag">Claude API</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="next-project">
+        <span class="eyebrow" style="margin-bottom:0;">Next project</span>
+        <a href="premier-league.html">Premier League Match Predictor &rarr;</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span class="copy">&copy; 2026 Mayungbo Oluwatobi Melvyn &mdash; built with calibration in mind.</span>
+      <div class="foot-links">
+        <a href="mailto:mlvyn.t@gmail.com">Email</a>
+        <a href="https://github.com/MelvTheGoat" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://linkedin.com/in/oluwatobi-mayungbo-3a567026b" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+  <script src="../js/main.js"></script>
+
+</body>
+</html>

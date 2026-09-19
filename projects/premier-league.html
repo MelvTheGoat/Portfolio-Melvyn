@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premier League Match Predictor &mdash; Mayungbo Oluwatobi Melvyn</title>
+  <meta name="description" content="A self-retraining match predictor that publishes three-way probabilities and a scoreline for every fixture, keeps every prediction it has ever made on the record, and retrains after each gameweek. Deployed and live.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="wrap">
+      <a class="brand" href="../index.html">Mayungbo<span class="dot">.</span>ml</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../projects.html" aria-current="page">Projects</a></li>
+        <li><a href="../writing.html">Writing</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Resume</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="project-hero">
+      <div class="wrap">
+        <div class="tags">
+          <span class="tag">Forecasting</span><span class="tag">Calibration</span><span class="tag">Deployed</span><span class="tag">LightGBM</span>
+        </div>
+        <h1>Premier League Match Predictor</h1>
+        <p class="subtitle">A self-retraining match predictor that publishes three-way probabilities and a scoreline for every fixture, keeps every prediction it has ever made on the record, and retrains after each gameweek. Deployed and live.</p>
+        <div class="meta-row">
+          <a class="btn btn-primary" href="https://premier-league-black.vercel.app" target="_blank" rel="noopener">Open live demo &rarr;</a>
+          <a class="btn" href="https://github.com/MelvTheGoat/Premier-League" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">01</span>The problem</h2>
+        <p>A league table describes what happened; it does not describe the situation a match is played in, and the situation often decides it. A club four days after a European tie fields a different side. A club that changed manager last month is not the team that finished last season. The tempting fix is a checklist &mdash; <em>if new manager, add 5%</em> &mdash; hand-tuned per fixture. This project refuses that entirely.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">02</span>The result</h2>
+        <div class="result-banner">
+          <div class="eyebrow">Headline number</div>
+          <p>Walk-forward backtest over 2023-24, 2024-25 and 2025-26 from gameweek 4 onward (1,050 matches): 52.1% outcome accuracy against 43.2% for always backing the home side, log loss 0.9948 against 1.0061 for a tuned Elo-only baseline, 8.2% of exact scorelines, and goals MAE of 0.93 per side. Live on Vercel, republished by a scheduled retrain.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">03</span>Architecture</h2>
+        <div class="flow">openfootball ingest → 204-column point-in-time feature table (one chronological pass)
+  → LightGBM + multinomial logistic blend (outcome) · Dixon-Coles bivariate Poisson (scoreline)
+  → predict next gameweek → store as an immutable run → export 1.4MB serving DB → Vercel</div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">04</span>The hardest decision</h2>
+        <div class="decision-block">
+          <h4>Every contextual signal becomes a feature, never an adjustment</h4>
+          <p>Congestion, manager tenure, availability, squad quality and table pressure all go into the feature table as numbers and are left for the model to weigh. Nothing anywhere applies a hand-tuned bump to a prediction. Where a signal resists measurement the answer is a better proxy, not a rule: &ldquo;new manager bounce&rdquo; becomes days since the appointment, matches played under the new manager, and the points-per-game difference either side of the change. If those matter the model finds them; if not, it ignores them. The same discipline drives the cross-division Elo &mdash; rated over the Premier League, the Championship, League One and the cups on one scale &mdash; which is the only thing that stops three promoted clubs a season starting as blanks.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">05</span>What the results actually showed</h2>
+        <div class="measured-box">
+          <div class="eyebrow">Measured, not assumed</div>
+          <p>Calibration is the number that matters here, because the site publishes probabilities rather than picks: when the model says 65% it happens about 65% of the time, across every band from 0.16 to 0.74. That came from the linear half of the ensemble and from early-stopping the boosting rounds &mdash; a fixed 400 rounds produced visible over-confidence in the 0.5&ndash;0.8 band and cost about 0.03 nats. Two things are reported rather than smoothed over: draws are almost never the argmax, so they are expressed as probability mass (typically 25&ndash;30%) instead of being forced into picks; and per-season accuracy ranges 57.1% / 52.0% / 47.1%, mostly a property of the seasons &mdash; 2025-26 had eleven managerial changes &mdash; not of the model.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">06</span>What's next</h2>
+        <p>Automate team news. The injury and suspension file ships empty, and a club with no row is treated as unknown rather than fully fit &mdash; so the feature removes itself instead of biasing the model. Filling it reliably is the single largest gain left on the table.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">07</span>Stack</h2>
+        <div class="stack-tags">
+          <span class="tag">Python</span><span class="tag">LightGBM</span><span class="tag">scikit-learn</span><span class="tag">Dixon-Coles Poisson</span><span class="tag">SQLite</span><span class="tag">Flask</span><span class="tag">GitHub Actions</span><span class="tag">Vercel</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="next-project">
+        <span class="eyebrow" style="margin-bottom:0;">Next project</span>
+        <a href="fraud.html">Sequence-Based Transaction Fraud Detection &rarr;</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span class="copy">&copy; 2026 Mayungbo Oluwatobi Melvyn &mdash; built with calibration in mind.</span>
+      <div class="foot-links">
+        <a href="mailto:mlvyn.t@gmail.com">Email</a>
+        <a href="https://github.com/MelvTheGoat" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://linkedin.com/in/oluwatobi-mayungbo-3a567026b" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+  <script src="../js/main.js"></script>
+
+</body>
+</html>

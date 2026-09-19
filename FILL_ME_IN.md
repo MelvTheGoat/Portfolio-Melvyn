@@ -1,38 +1,59 @@
 # Before you publish — what still needs real content
 
-The generator (`build.py`) refused to invent any of these, on purpose — a
-portfolio with even one fabricated detail is a liability the moment someone
-asks about it in an interview. Everything below is marked `[FILL]` directly
-in the generated HTML too, so you'll see it in the browser if you skip this.
+Most of the original list is done. What's left is below, shortest first.
 
-## 1. GitHub repo links (5 places)
-Each project page (`projects/*.html`) has a "View on GitHub" button pointing
-at a placeholder URL. Open `build.py`, find the `PROJECTS` list near the top,
-and replace each `github` field with the real repo URL. Re-run
-`python3 build.py` after editing — it regenerates every page from this one
-list, so you only edit the data once.
+## 1. Two live URLs (2 one-line edits)
 
-## 2. Resume PDF
-Drop your current resume as `assets/resume.pdf`. The embed and download
-button on `resume.html` already point there — nothing else to wire up.
+Open `build.py` and look at the constants near the top:
 
-## 3. Photo
-`about.html` has a dashed placeholder box where a real photo should go.
-Add an image to `assets/` and swap the placeholder `<div class="avatar-box">`
-for an `<img>` tag pointing at it (in `build_about()` inside `build.py`, then
-re-run the generator).
+```python
+FPL_LIVE_URL = None
+RECKON_LIVE_URL = None
+```
 
-## 4. Writing page
-Both entries on `writing.html` are placeholders for the RAG project writeup
-and the "why I evaluate before I model" piece discussed earlier. Publish the
-posts wherever you're writing them (Medium, a static blog, this same site),
-then update the `build_writing()` function in `build.py` with real dates,
-summaries, and links.
+Set either to its public URL and re-run `python3 build.py`. The project page
+picks it up on its own — an "Open live demo" button appears in the hero, and
+the project can be given `"status": "LIVE"` in the `PROJECTS` list so the card
+shows the live badge too. Left as `None`, the page just shows its GitHub link
+rather than claiming a demo that isn't there.
 
-## 5. Contact — optional scheduling link
-If you're actively interviewing, consider adding a Calendly (or similar)
-link on `contact.html` — it saves a recruiter an email round-trip. Purely
-optional; the page works fine without it.
+Everything else with a live URL is already wired: the RAG assistant and the
+credit risk service (both Cloud Run) and the Premier League predictor
+(`https://premier-league-black.vercel.app`, read off the repo's own homepage
+field).
+
+## 2. Reckon's stack — CV and repo disagree
+
+The CV lists Reckon as *Python, PyTorch, DuckDB, FastAPI, React, Docker,
+Railway, PostgreSQL*. The repository (`MelvTheGoat/Stack`) actually builds on
+FastAPI + SQLAlchemy + Pydantic with Jinja review pages, scikit-learn for the
+scoring model, Claude for the last prose-extraction layer, and a `cloudbuild.yaml`
+pointing at Cloud Run. The site follows the repository, because that's the thing
+an interviewer can open. Worth reconciling the CV to match — or, if the CV is
+describing a newer version, update `PROJECTS[0]["stack"]` in `build.py`.
+
+## 3. Writing page
+
+Both posts are drafted but unpublished, and the page now says exactly that
+instead of showing placeholder dates and dead links. Publish them wherever
+you're writing (Medium, a static blog, this same site), then edit
+`build_writing()` in `build.py` with the real date and link.
+
+## 4. Contact — optional scheduling link
+
+A Calendly link is already on `contact.html`
+(`https://calendly.com/mlvyn-t`). Check it still resolves to the right
+calendar before you send the site to anyone.
+
+---
+
+## Already done
+
+- **Repo links** — every project points at its real repository.
+- **Resume PDF** — `assets/resume.pdf` is the current ML Engineer CV, and
+  `resume.html` now also renders experience, education, skills and certificates
+  as HTML so nothing depends on the embed loading.
+- **Photo** — `about.html` uses the real image.
 
 ---
 
@@ -51,5 +72,5 @@ to nest it inside an existing repo).
 
 Either way — re-run `python3 build.py` locally after any content edit, then
 redeploy the regenerated files. The Python script is a convenience for
-editing consistently across all 11 pages; it is not a runtime dependency of
+editing consistently across all 14 pages; it is not a runtime dependency of
 the deployed site.

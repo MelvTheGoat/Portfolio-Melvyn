@@ -14,6 +14,13 @@ LINKEDIN = "https://linkedin.com/in/oluwatobi-mayungbo-3a567026b"
 GITHUB_PROFILE = "https://github.com/MelvTheGoat"
 LOCATION = "Lagos, Nigeria"
 RAG_LIVE_URL = "https://nigerian-fintech-regulation-assistant-474115007874.europe-west1.run.app"
+CREDIT_LIVE_URL = "https://credit-risk-decisioning-702657773047.europe-west1.run.app/"
+PL_LIVE_URL = "https://premier-league-black.vercel.app"
+# Set these to the public URL once the deployment is up; every page picks it up
+# automatically and the "Open live demo" button appears. Left as None, the
+# project simply shows its GitHub link instead of claiming a demo that isn't there.
+FPL_LIVE_URL = None
+RECKON_LIVE_URL = None
 
 FONT_LINK = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
@@ -106,57 +113,117 @@ def reading(label, value, unit="", small=False):
 
 
 # ---------------------------------------------------------------------------
-# Project data — every number here is from the CV / conversation record.
-# GITHUB fields are marked [FILL] because exact per-project repo slugs
-# were not confirmed — replace with the real URLs before publishing.
+# Project data — every number here comes from the CV or from the project's own
+# repository (its README, its evaluation output, its backtest table). Repo URLs
+# are the real ones. Live URLs live in the constants at the top of this file:
+# set FPL_LIVE_URL / RECKON_LIVE_URL once those deployments have a public
+# address and the "Open live demo" button appears on its own.
 # ---------------------------------------------------------------------------
 
 PROJECTS = [
     {
-        "slug": "rag",
-        "name": "Nigerian Fintech Compliance RAG Assistant",
-        "short": "A regulatory Q&A system over CBN circulars and the NDPA — hybrid retrieval, citation verification, and a refusal mechanism engineered as a first-class feature. Deployed and live.",
-        "tags": ["RAG", "LLM Evaluation", "Deployed", "GCP"],
-        "status": "LIVE",
-        "headline_label": "RECALL@5",
-        "headline_value": "0.96",
-        "headline_unit": "",
-        "github": "https://github.com/MelvTheGoat/nigerian-fintech-compliance-rag",
-        "live": RAG_LIVE_URL,
+        "slug": "reckon",
+        "name": "Reckon &mdash; Payment Reconciliation &amp; Review System",
+        "short": "Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira.",
+        "tags": ["Payments", "Calibration", "Human-in-the-loop", "FastAPI"],
+        "status": None,
+        "headline_label": "CLOSED WITHOUT A PERSON",
+        "headline_value": "76.1",
+        "headline_unit": "%",
+        "github": "https://github.com/MelvTheGoat/Stack",
+        "live": RECKON_LIVE_URL,
         "problem": (
-            "Compliance officers and engineers at Nigerian fintechs were manually cross-referencing "
-            "hundred-page CBN circulars and the NDPA to answer specific regulatory questions — a Tier "
-            "1 KYC threshold, a breach-notification window — that should take seconds, not an afternoon "
-            "of document search."
+            "Money arrives through card, dedicated virtual accounts, bank transfer and cash, and most "
+            "of it does not say what it is for &mdash; a bank credit reads <span class=\"mono\">NIP/GTB/OKONKWO "
+            "ADA/PAYMENT</span> and nothing more. Somebody sits down every evening and matches payments "
+            "to invoices by hand, and it fails the same ways every time: the name is spelled differently, "
+            "somebody underpaid, one transfer covers three invoices, the same payment was entered twice, "
+            "or two invoices are for the same amount and either one fits."
         ),
         "result": (
-            "0.96 recall@5 and 0.842 MRR against a labelled 50-question golden set, with zero retrieval "
-            "misses in the top 10. Deployed live on GCP Cloud Run within a ~225MB peak memory footprint."
+            "On 439 payments over one month worth &#8358;37,181,750: 76.1% closed without a person "
+            "&mdash; rules 69.9%, the model 6.2% &mdash; at 100% precision on that corpus and 80.1% "
+            "recall. Not one duplicate and not one payment from a stranger was closed unattended. The "
+            "105 cases that do reach a person are the part payments, overpayments, splits and "
+            "duplicates, which is the correct answer for them rather than a failure."
         ),
-        "flow": "ingest → section-aware chunk → hybrid index (BM25 + ONNX embeddings)\n  → reciprocal rank fusion → grounded generation → citation guardrail",
-        "hardest_title": "Why reciprocal rank fusion, not naive score-blending",
+        "flow": "payment in → duplicate check → three exact rules (our reference / dedicated account / amount + time window)\n  → scored candidates (name, amount, timing, channel, payer history) → Platt-calibrated probability\n  → close above 0.85, otherwise → review queue ranked by money at risk",
+        "hardest_title": "Where the 0.85 threshold came from, and why it was not chosen by eye",
         "hardest": (
-            "BM25 scores are unbounded and can exceed 15 for a rare term; cosine similarities from a "
-            "normalized embedder sit in a narrow 0.3&ndash;0.7 band. Adding them directly lets BM25 "
-            "dominate every ranking purely because its numbers are bigger, not because it's more "
-            "trustworthy. Min-max normalization looked like a fix but introduces its own problem: it's "
-            "per-query, so one weak BM25 match on a thin-result query gets rescaled to a false 1.0. "
-            "Reciprocal rank fusion keeps only each retriever's <em>rank</em>, discarding the raw score "
-            "entirely &mdash; rank 1 means the same thing regardless of which retriever produced it, "
-            "which sidesteps the scale mismatch instead of patching around it."
+            "The two mistakes cost different amounts. Checking a match that was fine anyway costs "
+            "&#8358;60 &mdash; three minutes of a bookkeeper's time. Closing a match that was wrong costs "
+            "about &#8358;5,000: two hours to notice, trace and reverse it, plus chasing a customer for "
+            "money they had already paid. That is 83 to 1, which means unattended closing only pays if "
+            "it is wrong less than roughly 1.2% of the time &mdash; and that is what puts the line at "
+            "0.85 and holds the model to 6% of the month. Six percent that is right beats twenty "
+            "percent that is mostly right. Change the two cost constants and the line moves on its own."
         ),
         "measured_title": "What the results actually showed",
         "measured": (
-            "The refusal-correctness metric came back at 0.40 in the offline evaluation &mdash; and "
-            "tracing it down, the failure was in the <em>stub judge's</em> lexical-overlap heuristic, "
-            "not the retrieval or guardrail logic: a question about Kenyan data-protection rules "
-            "retrieved the NDPA's cross-border-transfer clause, which shares real vocabulary with the "
-            "question purely by topical adjacency. That's a documented limitation of the offline stub, "
-            "not a claim about the deployed system's real refusal rate &mdash; re-validating against a "
-            "live provider is the explicit next step, not something papered over."
+            "A threshold policy is only as good as the probability behind it, so the scores were "
+            "calibrated and then checked on 390 candidate comparisons the model never trained on: "
+            "Brier 0.0219, expected calibration error 0.024. Platt scaling and isotonic regression were "
+            "both fitted and compared &mdash; Platt won, and both beat leaving the raw scores alone "
+            "(0.093 &rarr; 0.052). The prose-intake layer is reported separately and deliberately "
+            "under-claimed: 94.4% of 40 hand-labelled payment reports read completely right, but they "
+            "were written by the same person who wrote the parser, so the honest description is "
+            "&ldquo;it has not failed on these yet&rdquo;, not an accuracy rate. The ten written "
+            "afterwards and never used for tuning immediately found four real bugs."
         ),
-        "next": "Re-run the evaluation harness against a live provider instead of the offline stub, and expand the golden set with more adversarial and contradictory-source cases.",
-        "stack": ["Python", "Streamlit", "BM25", "ONNX Runtime", "Reciprocal Rank Fusion", "FastAPI", "Docker", "GCP Cloud Run"],
+        "next": "Stand up the public instance documented in docs/DEPLOY.md, and widen the prose-report evaluation well beyond 40 examples written in-house &mdash; the number that most needs an independent set behind it.",
+        "stack": ["Python", "FastAPI", "SQLAlchemy", "scikit-learn", "Pydantic", "Jinja", "Docker", "GCP Cloud Run", "Claude API"],
+    },
+    {
+        "slug": "premier-league",
+        "name": "Premier League Match Predictor",
+        "short": "A self-retraining match predictor that publishes three-way probabilities and a scoreline for every fixture, keeps every prediction it has ever made on the record, and retrains after each gameweek. Deployed and live.",
+        "tags": ["Forecasting", "Calibration", "Deployed", "LightGBM"],
+        "status": "LIVE",
+        "headline_label": "OUTCOME ACCURACY",
+        "headline_value": "52.1",
+        "headline_unit": "%",
+        "github": "https://github.com/MelvTheGoat/Premier-League",
+        "live": PL_LIVE_URL,
+        "problem": (
+            "A league table describes what happened; it does not describe the situation a match is "
+            "played in, and the situation often decides it. A club four days after a European tie "
+            "fields a different side. A club that changed manager last month is not the team that "
+            "finished last season. The tempting fix is a checklist &mdash; <em>if new manager, add "
+            "5%</em> &mdash; hand-tuned per fixture. This project refuses that entirely."
+        ),
+        "result": (
+            "Walk-forward backtest over 2023-24, 2024-25 and 2025-26 from gameweek 4 onward "
+            "(1,050 matches): 52.1% outcome accuracy against 43.2% for always backing the home side, "
+            "log loss 0.9948 against 1.0061 for a tuned Elo-only baseline, 8.2% of exact scorelines, "
+            "and goals MAE of 0.93 per side. Live on Vercel, republished by a scheduled retrain."
+        ),
+        "flow": "openfootball ingest → 204-column point-in-time feature table (one chronological pass)\n  → LightGBM + multinomial logistic blend (outcome) · Dixon-Coles bivariate Poisson (scoreline)\n  → predict next gameweek → store as an immutable run → export 1.4MB serving DB → Vercel",
+        "hardest_title": "Every contextual signal becomes a feature, never an adjustment",
+        "hardest": (
+            "Congestion, manager tenure, availability, squad quality and table pressure all go into the "
+            "feature table as numbers and are left for the model to weigh. Nothing anywhere applies a "
+            "hand-tuned bump to a prediction. Where a signal resists measurement the answer is a better "
+            "proxy, not a rule: &ldquo;new manager bounce&rdquo; becomes days since the appointment, "
+            "matches played under the new manager, and the points-per-game difference either side of "
+            "the change. If those matter the model finds them; if not, it ignores them. The same "
+            "discipline drives the cross-division Elo &mdash; rated over the Premier League, the "
+            "Championship, League One and the cups on one scale &mdash; which is the only thing that "
+            "stops three promoted clubs a season starting as blanks."
+        ),
+        "measured_title": "What the results actually showed",
+        "measured": (
+            "Calibration is the number that matters here, because the site publishes probabilities "
+            "rather than picks: when the model says 65% it happens about 65% of the time, across every "
+            "band from 0.16 to 0.74. That came from the linear half of the ensemble and from "
+            "early-stopping the boosting rounds &mdash; a fixed 400 rounds produced visible "
+            "over-confidence in the 0.5&ndash;0.8 band and cost about 0.03 nats. Two things are "
+            "reported rather than smoothed over: draws are almost never the argmax, so they are "
+            "expressed as probability mass (typically 25&ndash;30%) instead of being forced into picks; "
+            "and per-season accuracy ranges 57.1% / 52.0% / 47.1%, mostly a property of the seasons "
+            "&mdash; 2025-26 had eleven managerial changes &mdash; not of the model."
+        ),
+        "next": "Automate team news. The injury and suspension file ships empty, and a club with no row is treated as unknown rather than fully fit &mdash; so the feature removes itself instead of biasing the model. Filling it reliably is the single largest gain left on the table.",
+        "stack": ["Python", "LightGBM", "scikit-learn", "Dixon-Coles Poisson", "SQLite", "Flask", "GitHub Actions", "Vercel"],
     },
     {
         "slug": "fraud",
@@ -167,7 +234,7 @@ PROJECTS = [
         "headline_label": "P99 LATENCY",
         "headline_value": "5.1",
         "headline_unit": "ms",
-        "github": "https://github.com/MelvTheGoat/sequence-fraud-detection",
+        "github": "https://github.com/MelvTheGoat/Fraud-Detection-With-Sequence-Models",
         "live": None,
         "problem": (
             "Real-time transaction fraud detection needs to catch adaptive fraud patterns &mdash; card "
@@ -206,16 +273,62 @@ PROJECTS = [
         "stack": ["Python", "PyTorch", "LightGBM", "ONNX Runtime", "FastAPI", "Docker", "SHAP"],
     },
     {
+        "slug": "rag",
+        "name": "Nigerian Fintech Compliance RAG Assistant",
+        "short": "A regulatory Q&amp;A system over CBN circulars and the NDPA — hybrid retrieval, citation verification, and a refusal mechanism engineered as a first-class feature. Deployed and live.",
+        "tags": ["RAG", "LLM Evaluation", "Deployed", "GCP"],
+        "status": "LIVE",
+        "headline_label": "RECALL@5",
+        "headline_value": "0.96",
+        "headline_unit": "",
+        "github": "https://github.com/MelvTheGoat/Nigerian-Fintech-Compliance-RAG",
+        "live": RAG_LIVE_URL,
+        "problem": (
+            "Compliance officers and engineers at Nigerian fintechs were manually cross-referencing "
+            "hundred-page CBN circulars and the NDPA to answer specific regulatory questions — a Tier "
+            "1 KYC threshold, a breach-notification window — that should take seconds, not an afternoon "
+            "of document search."
+        ),
+        "result": (
+            "0.96 recall@5 and 0.842 MRR against a labelled 50-question golden set, with zero retrieval "
+            "misses in the top 10. Deployed live on GCP Cloud Run within a ~225MB peak memory footprint."
+        ),
+        "flow": "ingest → section-aware chunk → hybrid index (BM25 + ONNX embeddings)\n  → reciprocal rank fusion → grounded generation → citation guardrail",
+        "hardest_title": "Why reciprocal rank fusion, not naive score-blending",
+        "hardest": (
+            "BM25 scores are unbounded and can exceed 15 for a rare term; cosine similarities from a "
+            "normalized embedder sit in a narrow 0.3&ndash;0.7 band. Adding them directly lets BM25 "
+            "dominate every ranking purely because its numbers are bigger, not because it's more "
+            "trustworthy. Min-max normalization looked like a fix but introduces its own problem: it's "
+            "per-query, so one weak BM25 match on a thin-result query gets rescaled to a false 1.0. "
+            "Reciprocal rank fusion keeps only each retriever's <em>rank</em>, discarding the raw score "
+            "entirely &mdash; rank 1 means the same thing regardless of which retriever produced it, "
+            "which sidesteps the scale mismatch instead of patching around it."
+        ),
+        "measured_title": "What the results actually showed",
+        "measured": (
+            "The refusal-correctness metric came back at 0.40 in the offline evaluation &mdash; and "
+            "tracing it down, the failure was in the <em>stub judge's</em> lexical-overlap heuristic, "
+            "not the retrieval or guardrail logic: a question about Kenyan data-protection rules "
+            "retrieved the NDPA's cross-border-transfer clause, which shares real vocabulary with the "
+            "question purely by topical adjacency. That's a documented limitation of the offline stub, "
+            "not a claim about the deployed system's real refusal rate &mdash; re-validating against a "
+            "live provider is the explicit next step, not something papered over."
+        ),
+        "next": "Re-run the evaluation harness against a live provider instead of the offline stub, and expand the golden set with more adversarial and contradictory-source cases.",
+        "stack": ["Python", "Streamlit", "BM25", "ONNX Runtime", "Reciprocal Rank Fusion", "FastAPI", "Docker", "GCP Cloud Run"],
+    },
+    {
         "slug": "credit-risk",
-        "name": "Credit Risk Decisioning & Fairness Audit",
+        "name": "Credit Risk Decisioning &amp; Fairness Audit",
         "short": "A full credit decisioning system prioritizing calibration over ranking, with reject inference correcting for approval-only observed outcomes and fairness treated as an explicit policy tradeoff.",
-        "tags": ["Credit Risk", "Calibration", "Fairness", "Scorecards"],
-        "status": None,
+        "tags": ["Credit Risk", "Calibration", "Fairness", "Deployed"],
+        "status": "LIVE",
         "headline_label": "PRIORITIZED METRIC",
         "headline_value": "ECE",
         "headline_unit": "",
-        "github": "https://github.com/MelvTheGoat/credit-risk-decisionin",
-        "live": "https://credit-risk-decisioning-702657773047.europe-west1.run.app/",
+        "github": "https://github.com/MelvTheGoat/Credit-Risk-Decisioning",
+        "live": CREDIT_LIVE_URL,
         "problem": (
             "A lending decision needs a true probability of default, not just a well-ranked score "
             "&mdash; expected loss is a function of a calibrated probability multiplied by exposure, "
@@ -225,7 +338,9 @@ PROJECTS = [
         "result": (
             "Benchmarked gradient boosting against a traditional WOE-binned logistic scorecard on "
             "calibration quality specifically &mdash; Brier score, reliability diagrams, expected "
-            "calibration error &mdash; rather than defaulting to whichever model had the higher AUC."
+            "calibration error &mdash; rather than defaulting to whichever model had the higher AUC. "
+            "Ships cost-optimal approve/decline cutoffs, adverse-action reason codes, and an "
+            "append-only audit trail that lets any single decision be reconstructed months later."
         ),
         "flow": "WOE scorecard vs. LightGBM → calibration diagnostics\n  → reject inference on approval-only outcomes → fairness audit across protected groups\n  → adverse-action reason codes → audit trail",
         "hardest_title": "Why calibration was prioritized over ranking metrics",
@@ -243,10 +358,66 @@ PROJECTS = [
             "silently. Reject inference corrections were validated against simulated data specifically "
             "because the true outcome for a rejected applicant is, by definition, never observed in real "
             "data &mdash; there is no ground truth to check the correction against outside of a "
-            "simulation built to contain one."
+            "simulation built to contain one. Fairness was audited across sex, age, education and "
+            "marital status using demographic parity, equal-opportunity difference and within-group "
+            "calibration, and the accuracy&ndash;fairness tradeoff curve is presented as a policy "
+            "decision rather than silently optimized away."
         ),
         "next": "Extend the fairness audit to intersectional subgroups rather than single protected attributes evaluated independently.",
         "stack": ["Python", "LightGBM", "scikit-learn", "SHAP", "WOE Scorecards", "FastAPI", "Docker"],
+    },
+    {
+        "slug": "fpl",
+        "name": "FPL AI Manager",
+        "short": "Two models play the 2026/27 Fantasy Premier League season side by side &mdash; one under the real constraints, one with perfect freedom &mdash; to measure what continuity actually costs. Scored with real FPL points against the official gameweek average.",
+        "tags": ["Optimization", "Sequential Decisions", "No-Leakage", "Live Season"],
+        "status": None,
+        "headline_label": "COST OF CONTINUITY",
+        "headline_value": "25",
+        "headline_unit": "pts",
+        "github": "https://github.com/MelvTheGoat/Fantasy-Premier-League",
+        "live": FPL_LIVE_URL,
+        "problem": (
+            "Every FPL manager pays for continuity &mdash; one free transfer a week, &minus;4 for each "
+            "extra, and a squad in January shaped by what was bought in August &mdash; and nobody can "
+            "see the bill, because you only ever get to play one of the two possible seasons. "
+            "<strong>The Manager</strong> carries one squad all year under the real constraints; "
+            "<strong>Best XI of the Week</strong> rebuilds the best legal squad from scratch every "
+            "gameweek. They are not competing. The gap between them is the measurement."
+        ),
+        "result": (
+            "Both models are scored with real FPL points pulled from the API and never recalculated, "
+            "tracked against the official gameweek average &mdash; the same yardstick every human "
+            "manager is measured by. Nothing is graded against a simulation of itself. 574 tests, "
+            "weighted toward the rules engine and the projection, where a silent error does the most damage."
+        ),
+        "flow": "FPL API (cached, rate-limited) → rules engine as pure logic → component-built expected points\n  → ILP squad + lineup + captaincy optimiser (PuLP/CBC)\n  → Best XI (one gameweek) vs The Manager (transfers, hits, chips) → locked picks, never regenerated",
+        "hardest_title": "The no-leakage rule is enforced by the schema, not by discipline",
+        "hardest": (
+            "The season was already under way, so gameweek 1 onward had to be reconstructed &mdash; and "
+            "a reconstruction that peeks is worse than no reconstruction, because it still looks fine. "
+            "Three structures carry the rule: prices are snapshotted per gameweek so a GW7 decision is "
+            "costed at GW7 prices; projections are keyed by the deadline they were made before; and "
+            "writing picks for a gameweek that already has them <em>raises</em> rather than overwrites. "
+            "That last refusal is the load-bearing one &mdash; regenerating a past gameweek with "
+            "hindsight would quietly invalidate every result after it. The one honest leak is stated "
+            "outright: backfilled gameweeks read injury status as it is now, because the API does not "
+            "publish its history."
+        ),
+        "measured_title": "What the results actually showed",
+        "measured": (
+            "After the first four gameweeks: the Manager on 171 points, Best XI on 196 &mdash; the "
+            "25-point gap the project exists to measure &mdash; and, less comfortably, "
+            "<em>neither model has beaten the FPL average yet</em> (0/4 each). Small sample, but that "
+            "is reported as it stands rather than explained away. Four bugs also reached the published "
+            "site, and all four shared one shape worth naming: <strong>they produced plausible output "
+            "instead of an error.</strong> A season published as zeros reads as a season that went "
+            "badly, not as a broken deployment &mdash; which is why setup stages now gate on results "
+            "before picks, and why stale-score detection re-scores whenever the results behind a score "
+            "are newer than the score."
+        ),
+        "next": "A real backtest against a held-out prior season. The projection's component weights are currently reasoned rather than fitted, and only a held-out season says whether it is good or merely sensible.",
+        "stack": ["Python", "FastAPI", "PuLP / CBC", "SQLite", "React", "Docker", "GitHub Actions", "Render"],
     },
     {
         "slug": "forecasting",
@@ -257,7 +428,7 @@ PROJECTS = [
         "headline_label": "COST REDUCTION",
         "headline_value": "25",
         "headline_unit": "%",
-        "github": "https://github.com/MelvTheGoat/demand-forecasting-platform",
+        "github": "https://github.com/MelvTheGoat/nyc-taxi-demand-forecast",
         "live": None,
         "problem": (
             "Point forecasts and symmetric error metrics don't reflect the real cost structure of "
@@ -293,14 +464,14 @@ PROJECTS = [
     },
     {
         "slug": "uplift",
-        "name": "Uplift Modeling & Causal Targeting Study",
+        "name": "Uplift Modeling &amp; Causal Targeting Study",
         "short": "Heterogeneous treatment effect estimation on a randomized marketing trial, validated against simulated ground truth, with a placebo-test null result reported rather than shipped as a win.",
         "tags": ["Causal Inference", "Experiment Design", "Uplift"],
         "status": None,
         "headline_label": "SAMPLE SIZE",
         "headline_value": "64,000",
         "headline_unit": "",
-        "github": "https://github.com/MelvTheGoat/uplift-causal-targeting",
+        "github": "https://github.com/MelvTheGoat/Uplift-Modelling-Decision",
         "live": None,
         "problem": (
             "Standard propensity models identify customers likely to convert &mdash; not customers who "
@@ -335,15 +506,98 @@ PROJECTS = [
     },
 ]
 
+# ---------------------------------------------------------------------------
+# CV data — education, experience, skills and certificates, straight from the
+# resume PDF in /assets. Kept here so the resume page stays readable without
+# downloading anything, and so both pages can never drift apart.
+# ---------------------------------------------------------------------------
+
+EDUCATION = [
+    {
+        "place": "SQI College of ICT",
+        "what": "Professional Diploma in Artificial Intelligence",
+        "where": "Ibadan, Nigeria",
+        "when": "July 2025 &ndash; Present",
+    },
+    {
+        "place": "University of Ibadan",
+        "what": "B.Sc. in Statistics",
+        "where": "Oyo, Nigeria",
+        "when": "January 2021 &ndash; March 2025",
+    },
+]
+
+EXPERIENCE = [
+    {
+        "place": "SQI College of ICT",
+        "what": "Machine Learning Instructor",
+        "where": "Ibadan, Nigeria",
+        "when": "March 2026 &ndash; Present",
+        "points": [
+            "Teaching machine learning and deep learning to student cohorts, covering statistical "
+            "foundations, classical ML algorithms, neural architectures, sequence models, and "
+            "production evaluation metrics.",
+            "Instructing students on data analysis, feature engineering, and model building with "
+            "PyTorch, scikit-learn, Pandas, and NumPy.",
+            "Guiding learners through end-to-end ML projects on real-world datasets.",
+        ],
+    },
+    {
+        "place": "Nigerian Institute of Social and Economic Research (NISER)",
+        "what": "Internal Auditor",
+        "where": "Ibadan, Nigeria",
+        "when": "May 2024 &ndash; July 2024",
+        "points": [
+            "Analyzed financial and operational records to identify inconsistencies and "
+            "irregularities, performing manual anomaly detection across complex transactional "
+            "datasets &mdash; the same problem the Reckon project later automated.",
+        ],
+    },
+]
+
+SKILLS = [
+    ("AI &amp; LLM Systems", [
+        "Retrieval-Augmented Generation (RAG)", "Hybrid Search (BM25, Dense Embeddings, RRF)",
+        "LLM Evaluation &amp; Guardrails", "Prompt Engineering", "Citation Verification",
+        "Hugging Face", "ONNX Runtime",
+    ]),
+    ("Machine Learning", [
+        "PyTorch", "scikit-learn", "LightGBM", "XGBoost", "Deep Learning",
+        "Sequence Models (GRU, TCN, Transformers)",
+        "Model Calibration (Isotonic, Platt, Temperature Scaling)", "SHAP", "Feature Engineering",
+    ]),
+    ("Statistics &amp; Causal Inference", [
+        "Statistical Inference", "Experiment Design", "Power Analysis",
+        "Causal Inference (S/T/X-Learners, Causal Forests)", "Uplift Modeling",
+        "Time-Series Backtesting", "Logistic Regression", "WOE Scorecards",
+    ]),
+    ("Engineering &amp; MLOps", [
+        "Python", "SQL", "DuckDB", "FastAPI", "Docker", "GCP Cloud Run", "Railway", "Vercel",
+        "Prefect", "dbt-core", "MLflow", "Evidently", "CI/CD (GitHub Actions)", "Git", "Pytest",
+        "Streamlit", "React",
+    ]),
+    ("Payments &amp; Domain", [
+        "Transaction Fraud Detection", "Credit Risk Decisioning", "Payment Reconciliation",
+        "Regulatory Compliance (CBN/NDPA)", "Demand Forecasting",
+    ]),
+]
+
+CERTIFICATES = [
+    "Google Data Analytics Professional Certificate",
+    "Google Advanced Data Analytics Professional Certificate",
+    "Claude Code In Action",
+]
+
 
 def summary_line():
     return (
-        "Machine Learning &amp; AI Engineer with a Statistics background, specializing in systems "
-        "where the probability must be trustworthy and not merely the label. Experience spans "
-        "classical ML and deep learning &mdash; forecasting, credit risk, and fraud pipelines through "
-        "to sequence models and deployed retrieval-augmented generation &mdash; with consistent depth "
-        "in temporally honest validation, calibrated decisioning, evaluation design, containerized "
-        "serving, and drift monitoring."
+        "Machine Learning &amp; AI Engineer with a Statistics background, specializing in "
+        "probabilistic ML and production system design &mdash; systems where the probability has to "
+        "be trustworthy, not merely the label. Experience spans classical ML and deep learning "
+        "&mdash; forecasting, credit risk, and sequence-based fraud pipelines through to "
+        "retrieval-augmented generation and financial reconciliation systems &mdash; with consistent "
+        "depth in temporally honest validation, calibrated decisioning, evaluation design, "
+        "containerized serving, and operational reliability."
     )
 
 
@@ -352,7 +606,7 @@ def summary_line():
 # ---------------------------------------------------------------------------
 
 def build_home():
-    featured = PROJECTS[:3]  # rag, fraud, credit-risk
+    featured = PROJECTS[:3]  # reckon, premier-league, fraud
     cards = ""
     for p in featured:
         status = f'<span class="card-status">{p["status"]}</span>' if p["status"] else ""
@@ -374,41 +628,61 @@ def build_home():
         <div class="eyebrow">Lagos, Nigeria &mdash; Open to DS / ML / DL / AI roles</div>
         <h1>I build systems where the probability has to be right, not just plausible.</h1>
         <div class="role">Machine Learning &amp; AI Engineer</div>
-        <p class="lede">Forecasting, credit risk, fraud detection, causal inference, and a deployed
-        RAG system &mdash; each one evaluated the way a production system is evaluated, not the way
-        a portfolio project usually is.</p>
+        <p class="lede">Payment reconciliation, fraud detection, credit risk, forecasting, causal
+        inference, a deployed RAG system, and two football models that publish their predictions
+        before the results are known &mdash; each one evaluated the way a production system is
+        evaluated, not the way a portfolio project usually is.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Try the live demo &rarr;</a>
           <a class="btn" href="projects.html">View all projects</a>
         </div>
         <div class="reading-row">
-          {reading('MODELS EVALUATED AGAINST', '5', 'baselines')}
-          {reading('DEPLOYED', '2', 'live system')}
+          {reading('SYSTEMS BUILT', '8', 'projects')}
+          {reading('DEPLOYED &amp; LIVE', '3', 'public')}
           {reading('COST REDUCTION', '25&ndash;27', '%')}
         </div>
       </div>
     </section>
 
-    <div class="wrap">
-      <div class="demo-callout">
-        <div>
-          <div class="status"><span class="pulse"></span>Live &mdash; GCP Cloud Run</div>
-          <h3>Nigerian Fintech Compliance RAG Assistant</h3>
-          <p>Ask it a real regulatory question &mdash; CBN circulars, the NDPA &mdash; and get a
-          grounded, cited answer. It refuses rather than guesses when the source doesn't support one.</p>
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Running right now</h2>
+          <a href="projects.html">All projects &rarr;</a>
         </div>
-        <a class="btn btn-primary" href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Open the demo &rarr;</a>
-      </div>
 
-      <div class="demo-callout" style="margin-top: 1.5rem;">
-        <div>
-          <div class="status"><span class="pulse"></span>Live &mdash; GCP Cloud Run</div>
-          <h3>Credit Risk Decisioning &amp; Fairness Audit</h3>
-          <p>A full credit decisioning system prioritizing calibration over ranking, with reject inference correcting for approval-only observed outcomes.</p>
+        <div class="demo-callout">
+          <div>
+            <div class="status"><span class="pulse"></span>Live &mdash; Vercel, retrained weekly</div>
+            <h3>Premier League Match Predictor</h3>
+            <p>Three-way probabilities and a scoreline for every fixture in the current gameweek, plus
+            the full record of what it predicted for every gameweek already played &mdash; published
+            before kick-off and never edited afterwards.</p>
+          </div>
+          <a class="btn btn-primary" href="{PL_LIVE_URL}" target="_blank" rel="noopener">Open the site &rarr;</a>
         </div>
-        <a class="btn btn-primary" href="https://credit-risk-decisioning-702657773047.europe-west1.run.app/" target="_blank" rel="noopener">Open the demo &rarr;</a>
+
+        <div class="demo-callout" style="margin-top: 1.5rem;">
+          <div>
+            <div class="status"><span class="pulse"></span>Live &mdash; GCP Cloud Run</div>
+            <h3>Nigerian Fintech Compliance RAG Assistant</h3>
+            <p>Ask it a real regulatory question &mdash; CBN circulars, the NDPA &mdash; and get a
+            grounded, cited answer. It refuses rather than guesses when the source doesn't support one.</p>
+          </div>
+          <a class="btn btn-primary" href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Open the demo &rarr;</a>
+        </div>
+
+        <div class="demo-callout" style="margin-top: 1.5rem;">
+          <div>
+            <div class="status"><span class="pulse"></span>Live &mdash; GCP Cloud Run</div>
+            <h3>Credit Risk Decisioning &amp; Fairness Audit</h3>
+            <p>A full credit decisioning system prioritizing calibration over ranking, with reject
+            inference correcting for approval-only observed outcomes.</p>
+          </div>
+          <a class="btn btn-primary" href="{CREDIT_LIVE_URL}" target="_blank" rel="noopener">Open the demo &rarr;</a>
+        </div>
       </div>
-    </div>
+    </section>
 
     <section>
       <div class="wrap">
@@ -423,7 +697,7 @@ def build_home():
 
     <div class="pattern-strip">
       <div class="wrap">
-        <div class="eyebrow">The pattern across all five</div>
+        <div class="eyebrow">The pattern across all eight</div>
         <h2 style="color:#fff; max-width: 24ch;">Every model earns production through a measured comparison, not a vibe.</h2>
         <div class="pattern-grid">
           <div class="pattern-item"><span class="num">01</span><p>Evaluate before modeling &mdash; the metric and the split get decided before a single model is trained.</p></div>
@@ -441,7 +715,7 @@ def build_home():
 """
     return page(
         f"{NAME} &mdash; Machine Learning &amp; AI Engineer",
-        "Machine Learning and AI Engineer specializing in calibrated, rigorously evaluated systems: forecasting, credit risk, fraud detection, causal inference, and a deployed RAG assistant.",
+        "Machine Learning and AI Engineer specializing in calibrated, rigorously evaluated systems: payment reconciliation, fraud detection, credit risk, forecasting, causal inference, a deployed RAG assistant, and live football prediction models.",
         "home", body,
     )
 
@@ -472,7 +746,7 @@ def build_projects_index():
     body = f"""  <main>
     <section class="tight">
       <div class="wrap">
-        <div class="eyebrow">Five systems, one evaluation discipline</div>
+        <div class="eyebrow">Eight systems, one evaluation discipline</div>
         <h1>Projects</h1>
         <p class="lede" style="max-width:60ch;">Each page follows the same structure on purpose: the
         problem, the headline result, the architecture, the one decision most worth defending, and
@@ -489,7 +763,7 @@ def build_projects_index():
 """
     return page(
         f"Projects &mdash; {NAME}",
-        "Five ML and AI projects: demand forecasting, fraud detection, credit risk, causal inference, and a deployed RAG assistant.",
+        "Eight ML and AI projects: payment reconciliation, football match prediction, fraud detection, a deployed RAG assistant, credit risk, FPL squad optimization, demand forecasting, and causal inference.",
         "projects", body,
     )
 
@@ -612,26 +886,28 @@ def build_writing():
       <div class="wrap">
 
         <div class="post-card">
-          <span class="post-date">[FILL: publish date]</span>
           <h3>Building a RAG system that refuses on purpose</h3>
-          <p>[FILL: 1&ndash;2 sentence summary of the RAG writeup &mdash; use the outline already
-          drafted for this post. Covers hybrid retrieval, the citation guardrail, and the honest
-          refusal-correctness limitation found in evaluation.]</p>
-          <a class="card-link" href="#">Read the full post &rarr; [FILL: link once published]</a>
+          <p>Hybrid retrieval, the citation guardrail that strips any marker the model cited but never
+          actually retrieved, and the refusal-correctness number that came back at 0.40 &mdash; and
+          what tracing it to the offline stub judge, rather than to the system, actually took.</p>
+          <span class="post-date">In progress &mdash; the project it covers is
+          <a href="projects/rag.html">written up here</a> in the meantime.</span>
         </div>
 
         <div class="post-card">
-          <span class="post-date">[FILL: publish date]</span>
           <h3>Why I evaluate before I model</h3>
-          <p>[FILL: a generalized piece on the pattern across all five projects &mdash; honest
-          baselines, calibration over ranking, reporting the negative result. This is the piece that
-          ties the whole portfolio together into one argument.]</p>
-          <a class="card-link" href="#">Read the full post &rarr; [FILL: link once published]</a>
+          <p>The argument running through every project on this site: decide the metric and the split
+          before training anything, build the honest baseline first and report it even when it wins,
+          and publish the number that didn't flatter the project &mdash; the placebo test that came
+          back null, the pre-drift tie, the four gameweeks that missed the average.</p>
+          <span class="post-date">In progress &mdash; the pattern is visible across
+          <a href="projects.html">all eight projects</a> already.</span>
         </div>
 
         <div class="empty-note">
-          More writing in progress &mdash; two posts published, more planned as each project's
-          evaluation work matures.
+          Nothing published yet. These two are drafted and will be linked here when they go up &mdash;
+          until then, each project page carries the same reasoning in full, including the sections on
+          what the results actually showed.
         </div>
 
       </div>
@@ -649,7 +925,21 @@ def build_writing():
 # ABOUT
 # ---------------------------------------------------------------------------
 
+def skills_html():
+    out = ""
+    for group, items in SKILLS:
+        out += f"""<div class="skill-group">
+            <div class="eyebrow">{group}</div>
+            <div class="stack-tags">
+              {''.join(f'<span class="tag">{i}</span>' for i in items)}
+            </div>
+          </div>
+          """
+    return out.rstrip()
+
+
 def build_about():
+    skills = skills_html()
     body = f"""  <main>
     <section class="tight">
       <div class="wrap">
@@ -669,8 +959,8 @@ def build_about():
           <p>B.Sc. in Statistics from the University of Ibadan (2021&ndash;2025), then a deliberate,
           self-directed move into machine learning and AI &mdash; now formalized through a Professional
           Diploma in Artificial Intelligence at SQI College of ICT. Not the traditional CS-degree route
-          into ML, and I don't treat that as something to explain away &mdash; the five projects on this
-          site are the actual evidence of whether it worked.</p>
+          into ML, and I don't treat that as something to explain away &mdash; the eight projects on
+          this site are the actual evidence of whether it worked.</p>
 
           <h3>Why Statistics shapes how I build</h3>
           <p>Every project on this site prioritizes calibration &mdash; a true probability, not just a
@@ -681,11 +971,11 @@ def build_about():
           came back null, in the uplift study.</p>
 
           <h3>Teaching</h3>
-          <p>Currently a Machine Learning Instructor at SQI College of ICT, teaching predictive
-          modeling, algorithm selection, and evaluation metrics to monthly cohorts. Teaching has
-          sharpened something specific: the ability to explain a technical decision clearly to someone
-          who wasn't in the room when it was made &mdash; which is exactly what every project writeup
-          on this site is trying to do.</p>
+          <p>Currently a Machine Learning Instructor at SQI College of ICT, teaching statistical
+          foundations, classical ML, neural architectures, sequence models, and production evaluation
+          metrics to student cohorts. Teaching has sharpened something specific: the ability to explain
+          a technical decision clearly to someone who wasn't in the room when it was made &mdash; which
+          is exactly what every project writeup on this site is trying to do.</p>
 
           <h3>Building from Lagos</h3>
           <p>Every architectural decision in the RAG project &mdash; ONNX over PyTorch, brute-force
@@ -693,6 +983,28 @@ def build_about():
           designing for a genuinely constrained memory budget rather than assuming unlimited cloud
           resources by default. That's not a workaround; it's an engineering instinct that's harder to
           develop when infrastructure is never actually the constraint.</p>
+
+          <h3>Why two of these are football projects</h3>
+          <p>A portfolio project can be tuned until the backtest looks good, and nobody ever finds out.
+          Football does not allow that. The <a href="projects/premier-league.html">match predictor</a>
+          publishes its probabilities before kick-off and never edits them afterwards; the
+          <a href="projects/fpl.html">FPL models</a> lock their squads before each deadline and refuse
+          to regenerate a past gameweek at all. Both keep a public record that can disagree with them
+          &mdash; and currently does: neither FPL model has beaten the game's average yet. That is the
+          strongest available evidence that the evaluation discipline on the rest of this site is real
+          and not retrospective.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="tight">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Technical skills</h2>
+          <a href="resume.html">Full CV &rarr;</a>
+        </div>
+        <div class="skill-groups">
+          {skills}
         </div>
       </div>
     </section>
@@ -709,25 +1021,85 @@ def build_about():
 # RESUME
 # ---------------------------------------------------------------------------
 
+def cv_entries(rows):
+    out = ""
+    for r in rows:
+        points = ""
+        if r.get("points"):
+            points = "<ul class=\"cv-points\">" + "".join(f"<li>{p}</li>" for p in r["points"]) + "</ul>"
+        out += f"""<div class="cv-entry">
+            <div class="cv-head">
+              <h3>{r['place']}</h3>
+              <span class="cv-when">{r['when']}</span>
+            </div>
+            <div class="cv-role">{r['what']} &mdash; {r['where']}</div>
+            {points}
+          </div>
+          """
+    return out.rstrip()
+
+
 def build_resume():
+    education = cv_entries(EDUCATION)
+    experience = cv_entries(EXPERIENCE)
+    skills = skills_html()
+    certs = "".join(f"<li>{c}</li>" for c in CERTIFICATES)
+
     body = f"""  <main>
     <section class="tight">
       <div class="wrap">
         <div class="eyebrow">Resume</div>
         <h1>CV</h1>
+        <p class="lede" style="max-width:62ch;">{summary_line()}</p>
         <div class="btn-row" style="margin-top:18px;">
           <a class="btn btn-primary" href="assets/resume.pdf" download>Download PDF</a>
+          <a class="btn" href="projects.html">See the projects &rarr;</a>
         </div>
       </div>
     </section>
+
     <section class="tight">
       <div class="wrap">
+        <div class="section-head"><h2>Experience</h2></div>
+        {experience}
+      </div>
+    </section>
+
+    <section class="tight">
+      <div class="wrap">
+        <div class="section-head"><h2>Education</h2></div>
+        {education}
+      </div>
+    </section>
+
+    <section class="tight">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Technical skills</h2>
+          <a href="projects.html">Where each one is used &rarr;</a>
+        </div>
+        <div class="skill-groups">
+          {skills}
+        </div>
+      </div>
+    </section>
+
+    <section class="tight">
+      <div class="wrap">
+        <div class="section-head"><h2>Awards &amp; certificates</h2></div>
+        <ul class="cv-points">{certs}</ul>
+      </div>
+    </section>
+
+    <section class="tight">
+      <div class="wrap">
+        <div class="section-head"><h2>The PDF</h2></div>
         <div class="resume-embed">
           <iframe src="assets/resume.pdf" title="Resume"></iframe>
         </div>
-        <p class="empty-note" style="margin-top:16px;">
-          [FILL: place your current resume PDF at <span class="mono">/assets/resume.pdf</span>.
-          The embed and download button above both point there already &mdash; nothing else to wire up.]
+        <p class="resume-fallback">
+          If the embed doesn't load in your browser,
+          <a href="assets/resume.pdf" download>download the PDF</a> instead.
         </p>
       </div>
     </section>
@@ -735,7 +1107,7 @@ def build_resume():
 """
     return page(
         f"Resume &mdash; {NAME}",
-        "Download or view the current resume.",
+        f"CV for {NAME} &mdash; Machine Learning &amp; AI Engineer: experience, education, technical skills, and certificates.",
         "resume", body,
     )
 

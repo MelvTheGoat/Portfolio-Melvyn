@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Projects &mdash; Mayungbo Oluwatobi Melvyn</title>
-  <meta name="description" content="Five ML and AI projects: demand forecasting, fraud detection, credit risk, causal inference, and a deployed RAG assistant.">
+  <meta name="description" content="Eight ML and AI projects: payment reconciliation, football match prediction, fraud detection, a deployed RAG assistant, credit risk, FPL squad optimization, demand forecasting, and causal inference.">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -29,7 +29,7 @@
   <main>
     <section class="tight">
       <div class="wrap">
-        <div class="eyebrow">Five systems, one evaluation discipline</div>
+        <div class="eyebrow">Eight systems, one evaluation discipline</div>
         <h1>Projects</h1>
         <p class="lede" style="max-width:60ch;">Each page follows the same structure on purpose: the
         problem, the headline result, the architecture, the one decision most worth defending, and
@@ -39,18 +39,35 @@
     <section class="tight">
       <div class="wrap">
         <div class="project-grid full">
-        <a class="card" href="projects/rag.html" style="text-decoration:none;">
+        <a class="card" href="projects/reckon.html" style="text-decoration:none;">
           <div class="card-main">
             <div class="tags">
-              <span class="tag">RAG</span><span class="tag">LLM Evaluation</span><span class="tag">Deployed</span><span class="tag">GCP</span>
+              <span class="tag">Payments</span><span class="tag">Calibration</span><span class="tag">Human-in-the-loop</span><span class="tag">FastAPI</span>
             </div>
-            <h3>Nigerian Fintech Compliance RAG Assistant</h3>
-            <p class="card-desc">A regulatory Q&A system over CBN circulars and the NDPA — hybrid retrieval, citation verification, and a refusal mechanism engineered as a first-class feature. Deployed and live.</p>
+            <h3>Reckon &mdash; Payment Reconciliation &amp; Review System</h3>
+            <p class="card-desc">Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira.</p>
           </div>
           <div>
             <div class="reading">
-              <span class="r-label">RECALL@5</span>
-              <span class="r-value">0.96</span>
+              <span class="r-label">CLOSED WITHOUT A PERSON</span>
+              <span class="r-value">76.1<span class="unit">%</span></span>
+              <span class="r-axis"></span>
+            </div>
+            <div style="margin-top:10px;"><span class="card-link">View &rarr;</span></div>
+          </div>
+        </a>
+        <a class="card" href="projects/premier-league.html" style="text-decoration:none;">
+          <div class="card-main">
+            <div class="tags">
+              <span class="tag">Forecasting</span><span class="tag">Calibration</span><span class="tag">Deployed</span><span class="tag">LightGBM</span>
+            </div>
+            <h3>Premier League Match Predictor</h3>
+            <p class="card-desc">A self-retraining match predictor that publishes three-way probabilities and a scoreline for every fixture, keeps every prediction it has ever made on the record, and retrains after each gameweek. Deployed and live.</p>
+          </div>
+          <div>
+            <div class="reading">
+              <span class="r-label">OUTCOME ACCURACY</span>
+              <span class="r-value">52.1<span class="unit">%</span></span>
               <span class="r-axis"></span>
             </div>
             <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
@@ -73,18 +90,52 @@
             <div style="margin-top:10px;"><span class="card-link">View &rarr;</span></div>
           </div>
         </a>
+        <a class="card" href="projects/rag.html" style="text-decoration:none;">
+          <div class="card-main">
+            <div class="tags">
+              <span class="tag">RAG</span><span class="tag">LLM Evaluation</span><span class="tag">Deployed</span><span class="tag">GCP</span>
+            </div>
+            <h3>Nigerian Fintech Compliance RAG Assistant</h3>
+            <p class="card-desc">A regulatory Q&amp;A system over CBN circulars and the NDPA — hybrid retrieval, citation verification, and a refusal mechanism engineered as a first-class feature. Deployed and live.</p>
+          </div>
+          <div>
+            <div class="reading">
+              <span class="r-label">RECALL@5</span>
+              <span class="r-value">0.96</span>
+              <span class="r-axis"></span>
+            </div>
+            <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
+          </div>
+        </a>
         <a class="card" href="projects/credit-risk.html" style="text-decoration:none;">
           <div class="card-main">
             <div class="tags">
-              <span class="tag">Credit Risk</span><span class="tag">Calibration</span><span class="tag">Fairness</span><span class="tag">Scorecards</span>
+              <span class="tag">Credit Risk</span><span class="tag">Calibration</span><span class="tag">Fairness</span><span class="tag">Deployed</span>
             </div>
-            <h3>Credit Risk Decisioning & Fairness Audit</h3>
+            <h3>Credit Risk Decisioning &amp; Fairness Audit</h3>
             <p class="card-desc">A full credit decisioning system prioritizing calibration over ranking, with reject inference correcting for approval-only observed outcomes and fairness treated as an explicit policy tradeoff.</p>
           </div>
           <div>
             <div class="reading">
               <span class="r-label">PRIORITIZED METRIC</span>
               <span class="r-value">ECE</span>
+              <span class="r-axis"></span>
+            </div>
+            <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
+          </div>
+        </a>
+        <a class="card" href="projects/fpl.html" style="text-decoration:none;">
+          <div class="card-main">
+            <div class="tags">
+              <span class="tag">Optimization</span><span class="tag">Sequential Decisions</span><span class="tag">No-Leakage</span><span class="tag">Live Season</span>
+            </div>
+            <h3>FPL AI Manager</h3>
+            <p class="card-desc">Two models play the 2026/27 Fantasy Premier League season side by side &mdash; one under the real constraints, one with perfect freedom &mdash; to measure what continuity actually costs. Scored with real FPL points against the official gameweek average.</p>
+          </div>
+          <div>
+            <div class="reading">
+              <span class="r-label">COST OF CONTINUITY</span>
+              <span class="r-value">25<span class="unit">pts</span></span>
               <span class="r-axis"></span>
             </div>
             <div style="margin-top:10px;"><span class="card-link">View &rarr;</span></div>
@@ -112,7 +163,7 @@
             <div class="tags">
               <span class="tag">Causal Inference</span><span class="tag">Experiment Design</span><span class="tag">Uplift</span>
             </div>
-            <h3>Uplift Modeling & Causal Targeting Study</h3>
+            <h3>Uplift Modeling &amp; Causal Targeting Study</h3>
             <p class="card-desc">Heterogeneous treatment effect estimation on a randomized marketing trial, validated against simulated ground truth, with a placebo-test null result reported rather than shipped as a win.</p>
           </div>
           <div>

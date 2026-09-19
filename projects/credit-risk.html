@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Credit Risk Decisioning & Fairness Audit &mdash; Mayungbo Oluwatobi Melvyn</title>
+  <title>Credit Risk Decisioning &amp; Fairness Audit &mdash; Mayungbo Oluwatobi Melvyn</title>
   <meta name="description" content="A full credit decisioning system prioritizing calibration over ranking, with reject inference correcting for approval-only observed outcomes and fairness treated as an explicit policy tradeoff.">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
@@ -30,13 +30,13 @@
     <section class="project-hero">
       <div class="wrap">
         <div class="tags">
-          <span class="tag">Credit Risk</span><span class="tag">Calibration</span><span class="tag">Fairness</span><span class="tag">Scorecards</span>
+          <span class="tag">Credit Risk</span><span class="tag">Calibration</span><span class="tag">Fairness</span><span class="tag">Deployed</span>
         </div>
-        <h1>Credit Risk Decisioning & Fairness Audit</h1>
+        <h1>Credit Risk Decisioning &amp; Fairness Audit</h1>
         <p class="subtitle">A full credit decisioning system prioritizing calibration over ranking, with reject inference correcting for approval-only observed outcomes and fairness treated as an explicit policy tradeoff.</p>
         <div class="meta-row">
           <a class="btn btn-primary" href="https://credit-risk-decisioning-702657773047.europe-west1.run.app/" target="_blank" rel="noopener">Open live demo &rarr;</a>
-          <a class="btn" href="https://github.com/MelvTheGoat/credit-risk-decisionin" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+          <a class="btn" href="https://github.com/MelvTheGoat/Credit-Risk-Decisioning" target="_blank" rel="noopener">View on GitHub &rarr;</a>
         </div>
       </div>
     </section>
@@ -53,7 +53,7 @@
         <h2><span class="num">02</span>The result</h2>
         <div class="result-banner">
           <div class="eyebrow">Headline number</div>
-          <p>Benchmarked gradient boosting against a traditional WOE-binned logistic scorecard on calibration quality specifically &mdash; Brier score, reliability diagrams, expected calibration error &mdash; rather than defaulting to whichever model had the higher AUC.</p>
+          <p>Benchmarked gradient boosting against a traditional WOE-binned logistic scorecard on calibration quality specifically &mdash; Brier score, reliability diagrams, expected calibration error &mdash; rather than defaulting to whichever model had the higher AUC. Ships cost-optimal approve/decline cutoffs, adverse-action reason codes, and an append-only audit trail that lets any single decision be reconstructed months later.</p>
         </div>
       </div>
     </section>
@@ -82,7 +82,7 @@
         <h2><span class="num">05</span>What the results actually showed</h2>
         <div class="measured-box">
           <div class="eyebrow">Measured, not assumed</div>
-          <p>Outcomes are only observed for previously <em>approved</em> applicants &mdash; a structural selection bias that a naive model trained only on approved-applicant data inherits silently. Reject inference corrections were validated against simulated data specifically because the true outcome for a rejected applicant is, by definition, never observed in real data &mdash; there is no ground truth to check the correction against outside of a simulation built to contain one.</p>
+          <p>Outcomes are only observed for previously <em>approved</em> applicants &mdash; a structural selection bias that a naive model trained only on approved-applicant data inherits silently. Reject inference corrections were validated against simulated data specifically because the true outcome for a rejected applicant is, by definition, never observed in real data &mdash; there is no ground truth to check the correction against outside of a simulation built to contain one. Fairness was audited across sex, age, education and marital status using demographic parity, equal-opportunity difference and within-group calibration, and the accuracy&ndash;fairness tradeoff curve is presented as a policy decision rather than silently optimized away.</p>
         </div>
       </div>
     </section>
@@ -106,7 +106,7 @@
     <div class="wrap">
       <div class="next-project">
         <span class="eyebrow" style="margin-bottom:0;">Next project</span>
-        <a href="forecasting.html">Self-Operating Demand Forecasting Platform &rarr;</a>
+        <a href="fpl.html">FPL AI Manager &rarr;</a>
       </div>
     </div>
   </main>

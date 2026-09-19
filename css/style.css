@@ -633,6 +633,49 @@ section.tight { padding: 40px 0; }
 }
 
 /* ============================================================
+   CV entries + skill groups (resume, about)
+   ============================================================ */
+.cv-entry {
+  border-bottom: 1px solid var(--hairline);
+  padding: 22px 0;
+}
+.cv-entry:last-of-type { border-bottom: 0; }
+.cv-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cv-head h3 { margin: 0; font-size: 1.15rem; }
+.cv-when {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--slate);
+  white-space: nowrap;
+}
+.cv-role {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--calibration);
+  margin-top: 4px;
+}
+.cv-points {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--ink-soft);
+}
+.cv-points li { margin-bottom: 8px; }
+.cv-points li:last-child { margin-bottom: 0; }
+
+.skill-groups {
+  display: grid;
+  gap: 26px;
+}
+.skill-group .eyebrow { margin-bottom: 10px; }
+.skill-group .stack-tags { margin: 0; }
+
+/* ============================================================
    Footer
    ============================================================ */
 footer {
