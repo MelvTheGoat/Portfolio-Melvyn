@@ -19,8 +19,8 @@ PL_LIVE_URL = "https://premier-league-black.vercel.app"
 # Set these to the public URL once the deployment is up; every page picks it up
 # automatically and the "Open live demo" button appears. Left as None, the
 # project simply shows its GitHub link instead of claiming a demo that isn't there.
-FPL_LIVE_URL = None
-RECKON_LIVE_URL = None
+FPL_LIVE_URL = "https://melvthegoat.github.io/Fantasy-Premier-League/"
+RECKON_LIVE_URL = "https://stack-production-d2a4.up.railway.app/review"
 
 FONT_LINK = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
@@ -124,9 +124,9 @@ PROJECTS = [
     {
         "slug": "reckon",
         "name": "Reckon &mdash; Payment Reconciliation &amp; Review System",
-        "short": "Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira.",
-        "tags": ["Payments", "Calibration", "Human-in-the-loop", "FastAPI"],
-        "status": None,
+        "short": "Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira. Deployed, with the review queue open.",
+        "tags": ["Payments", "Calibration", "Human-in-the-loop", "Deployed"],
+        "status": "LIVE",
         "headline_label": "CLOSED WITHOUT A PERSON",
         "headline_value": "76.1",
         "headline_unit": "%",
@@ -170,8 +170,8 @@ PROJECTS = [
             "&ldquo;it has not failed on these yet&rdquo;, not an accuracy rate. The ten written "
             "afterwards and never used for tuning immediately found four real bugs."
         ),
-        "next": "Stand up the public instance documented in docs/DEPLOY.md, and widen the prose-report evaluation well beyond 40 examples written in-house &mdash; the number that most needs an independent set behind it.",
-        "stack": ["Python", "FastAPI", "SQLAlchemy", "scikit-learn", "Pydantic", "Jinja", "Docker", "GCP Cloud Run", "Claude API"],
+        "next": "Widen the prose-report evaluation well beyond 40 examples written in-house &mdash; the number that most needs an independent set behind it &mdash; and re-fit the threshold against a second month of real payments to check the 83:1 cost ratio holds outside the corpus it was drawn from.",
+        "stack": ["Python", "FastAPI", "SQLAlchemy", "PostgreSQL", "scikit-learn", "Pydantic", "Jinja", "Docker", "Railway", "Claude API"],
     },
     {
         "slug": "premier-league",
@@ -369,9 +369,9 @@ PROJECTS = [
     {
         "slug": "fpl",
         "name": "FPL AI Manager",
-        "short": "Two models play the 2026/27 Fantasy Premier League season side by side &mdash; one under the real constraints, one with perfect freedom &mdash; to measure what continuity actually costs. Scored with real FPL points against the official gameweek average.",
-        "tags": ["Optimization", "Sequential Decisions", "No-Leakage", "Live Season"],
-        "status": None,
+        "short": "Two models play the 2026/27 Fantasy Premier League season side by side &mdash; one under the real constraints, one with perfect freedom &mdash; to measure what continuity actually costs. Scored with real FPL points against the official gameweek average, and published live each gameweek.",
+        "tags": ["Optimization", "Sequential Decisions", "No-Leakage", "Deployed"],
+        "status": "LIVE",
         "headline_label": "COST OF CONTINUITY",
         "headline_value": "25",
         "headline_unit": "pts",
@@ -417,7 +417,7 @@ PROJECTS = [
             "are newer than the score."
         ),
         "next": "A real backtest against a held-out prior season. The projection's component weights are currently reasoned rather than fitted, and only a held-out season says whether it is good or merely sensible.",
-        "stack": ["Python", "FastAPI", "PuLP / CBC", "SQLite", "React", "Docker", "GitHub Actions", "Render"],
+        "stack": ["Python", "FastAPI", "PuLP / CBC", "SQLite", "React", "Docker", "GitHub Actions", "GitHub Pages"],
     },
     {
         "slug": "forecasting",
@@ -638,7 +638,7 @@ def build_home():
         </div>
         <div class="reading-row">
           {reading('SYSTEMS BUILT', '8', 'projects')}
-          {reading('DEPLOYED &amp; LIVE', '3', 'public')}
+          {reading('DEPLOYED &amp; LIVE', '5', 'public')}
           {reading('COST REDUCTION', '25&ndash;27', '%')}
         </div>
       </div>
@@ -652,6 +652,17 @@ def build_home():
         </div>
 
         <div class="demo-callout">
+          <div>
+            <div class="status"><span class="pulse"></span>Live &mdash; Railway</div>
+            <h3>Reckon &mdash; Payment Reconciliation</h3>
+            <p>The review queue itself: the cases the system could not prove, ranked by money at risk,
+            each with a suggested match and the reasons for it written out. 76.1% of a month's payments
+            never reach this screen at all.</p>
+          </div>
+          <a class="btn btn-primary" href="{RECKON_LIVE_URL}" target="_blank" rel="noopener">Open the queue &rarr;</a>
+        </div>
+
+        <div class="demo-callout" style="margin-top: 1.5rem;">
           <div>
             <div class="status"><span class="pulse"></span>Live &mdash; Vercel, retrained weekly</div>
             <h3>Premier League Match Predictor</h3>
@@ -672,15 +683,12 @@ def build_home():
           <a class="btn btn-primary" href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Open the demo &rarr;</a>
         </div>
 
-        <div class="demo-callout" style="margin-top: 1.5rem;">
-          <div>
-            <div class="status"><span class="pulse"></span>Live &mdash; GCP Cloud Run</div>
-            <h3>Credit Risk Decisioning &amp; Fairness Audit</h3>
-            <p>A full credit decisioning system prioritizing calibration over ranking, with reject
-            inference correcting for approval-only observed outcomes.</p>
-          </div>
-          <a class="btn btn-primary" href="{CREDIT_LIVE_URL}" target="_blank" rel="noopener">Open the demo &rarr;</a>
-        </div>
+        <p class="also-live">Also live &mdash;
+          <a href="{CREDIT_LIVE_URL}" target="_blank" rel="noopener">Credit Risk Decisioning &amp; Fairness Audit</a>
+          (GCP Cloud Run) and
+          <a href="{FPL_LIVE_URL}" target="_blank" rel="noopener">FPL AI Manager</a>
+          (GitHub Pages, republished every gameweek).
+        </p>
       </div>
     </section>
 

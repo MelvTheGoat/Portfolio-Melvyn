@@ -49,7 +49,7 @@
             </div>
           <div class="reading">
               <span class="r-label">DEPLOYED &amp; LIVE</span>
-              <span class="r-value">3<span class="unit">public</span></span>
+              <span class="r-value">5<span class="unit">public</span></span>
               <span class="r-axis"></span>
             </div>
           <div class="reading">
@@ -70,6 +70,17 @@
 
         <div class="demo-callout">
           <div>
+            <div class="status"><span class="pulse"></span>Live &mdash; Railway</div>
+            <h3>Reckon &mdash; Payment Reconciliation</h3>
+            <p>The review queue itself: the cases the system could not prove, ranked by money at risk,
+            each with a suggested match and the reasons for it written out. 76.1% of a month's payments
+            never reach this screen at all.</p>
+          </div>
+          <a class="btn btn-primary" href="https://stack-production-d2a4.up.railway.app/review" target="_blank" rel="noopener">Open the queue &rarr;</a>
+        </div>
+
+        <div class="demo-callout" style="margin-top: 1.5rem;">
+          <div>
             <div class="status"><span class="pulse"></span>Live &mdash; Vercel, retrained weekly</div>
             <h3>Premier League Match Predictor</h3>
             <p>Three-way probabilities and a scoreline for every fixture in the current gameweek, plus
@@ -89,15 +100,12 @@
           <a class="btn btn-primary" href="https://nigerian-fintech-regulation-assistant-474115007874.europe-west1.run.app" target="_blank" rel="noopener">Open the demo &rarr;</a>
         </div>
 
-        <div class="demo-callout" style="margin-top: 1.5rem;">
-          <div>
-            <div class="status"><span class="pulse"></span>Live &mdash; GCP Cloud Run</div>
-            <h3>Credit Risk Decisioning &amp; Fairness Audit</h3>
-            <p>A full credit decisioning system prioritizing calibration over ranking, with reject
-            inference correcting for approval-only observed outcomes.</p>
-          </div>
-          <a class="btn btn-primary" href="https://credit-risk-decisioning-702657773047.europe-west1.run.app/" target="_blank" rel="noopener">Open the demo &rarr;</a>
-        </div>
+        <p class="also-live">Also live &mdash;
+          <a href="https://credit-risk-decisioning-702657773047.europe-west1.run.app/" target="_blank" rel="noopener">Credit Risk Decisioning &amp; Fairness Audit</a>
+          (GCP Cloud Run) and
+          <a href="https://melvthegoat.github.io/Fantasy-Premier-League/" target="_blank" rel="noopener">FPL AI Manager</a>
+          (GitHub Pages, republished every gameweek).
+        </p>
       </div>
     </section>
 
@@ -113,13 +121,13 @@
             <span class="tag">Payments</span><span class="tag">Calibration</span><span class="tag">Human-in-the-loop</span>
           </div>
           <h3>Reckon &mdash; Payment Reconciliation &amp; Review System</h3>
-          <p class="card-desc">Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira.</p>
+          <p class="card-desc">Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira. Deployed, with the review queue open.</p>
           <div class="reading sm">
               <span class="r-label">CLOSED WITHOUT A PERSON</span>
               <span class="r-value">76.1<span class="unit">%</span></span>
               <span class="r-axis"></span>
             </div>
-          <span class="card-link">View project &rarr;</span>
+          <span class="card-link"><span class="card-status">LIVE</span></span>
         </a>
         <a class="card" href="projects/premier-league.html" style="text-decoration:none;">
           <div class="tags">

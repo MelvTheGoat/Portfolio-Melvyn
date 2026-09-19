@@ -2,35 +2,25 @@
 
 Most of the original list is done. What's left is below, shortest first.
 
-## 1. Two live URLs (2 one-line edits)
-
-Open `build.py` and look at the constants near the top:
-
-```python
-FPL_LIVE_URL = None
-RECKON_LIVE_URL = None
-```
-
-Set either to its public URL and re-run `python3 build.py`. The project page
-picks it up on its own — an "Open live demo" button appears in the hero, and
-the project can be given `"status": "LIVE"` in the `PROJECTS` list so the card
-shows the live badge too. Left as `None`, the page just shows its GitHub link
-rather than claiming a demo that isn't there.
-
-Everything else with a live URL is already wired: the RAG assistant and the
-credit risk service (both Cloud Run) and the Premier League predictor
-(`https://premier-league-black.vercel.app`, read off the repo's own homepage
-field).
-
-## 2. Reckon's stack — CV and repo disagree
+## 1. Reckon's stack — CV and repo still disagree in part
 
 The CV lists Reckon as *Python, PyTorch, DuckDB, FastAPI, React, Docker,
-Railway, PostgreSQL*. The repository (`MelvTheGoat/Stack`) actually builds on
-FastAPI + SQLAlchemy + Pydantic with Jinja review pages, scikit-learn for the
-scoring model, Claude for the last prose-extraction layer, and a `cloudbuild.yaml`
-pointing at Cloud Run. The site follows the repository, because that's the thing
-an interviewer can open. Worth reconciling the CV to match — or, if the CV is
-describing a newer version, update `PROJECTS[0]["stack"]` in `build.py`.
+Railway, PostgreSQL*. Railway and Postgres check out — the live instance is on
+Railway, and `RECON_DATABASE_URL` points SQLAlchemy at Postgres. The rest does
+not: the repository (`MelvTheGoat/Stack`) has no PyTorch, no DuckDB and no
+React. The scoring model is scikit-learn with Platt calibration, the review
+pages are Jinja templates, and the last extraction layer calls Claude. The site
+follows the repository, because that's the thing an interviewer can open.
+
+Worth reconciling the CV to match — or, if it's describing a newer version,
+update `PROJECTS[0]["stack"]` in `build.py`.
+
+## 2. FPL ships from GitHub Pages, not Render
+
+`render.yaml` describes a paid always-on service, but the live site is the
+GitHub Actions + Pages path (`melvthegoat.github.io/Fantasy-Premier-League`),
+so the project page lists GitHub Pages. If you move it to Render later, change
+`FPL_LIVE_URL` and the last entry of that project's `stack`.
 
 ## 3. Writing page
 
@@ -50,6 +40,11 @@ calendar before you send the site to anyone.
 ## Already done
 
 - **Repo links** — every project points at its real repository.
+- **Live URLs** — all five deployed systems are wired up and badged LIVE:
+  Reckon (Railway), the Premier League predictor (Vercel), the RAG assistant
+  and the credit risk service (both Cloud Run), and the FPL AI Manager
+  (GitHub Pages). They live as constants at the top of `build.py`; every page
+  reads them from there.
 - **Resume PDF** — `assets/resume.pdf` is the current ML Engineer CV, and
   `resume.html` now also renders experience, education, skills and certificates
   as HTML so nothing depends on the embed loading.

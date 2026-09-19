@@ -632,6 +632,14 @@ section.tight { padding: 40px 0; }
   color: var(--slate);
 }
 
+.also-live {
+  margin: 20px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--slate);
+  line-height: 1.8;
+}
+
 /* ============================================================
    CV entries + skill groups (resume, about)
    ============================================================ */
