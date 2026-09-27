@@ -279,6 +279,61 @@ PROJECTS = [
         "stack": ["Python", "PyTorch", "LightGBM", "ONNX Runtime", "FastAPI", "Docker", "SHAP"],
     },
     {
+        "slug": "web3-risk",
+        "name": "web3-risk-mcp &mdash; On-Chain Risk Analyst",
+        "short": "An MCP server that gives any AI assistant six read-only tools for checking a wallet, token or contract before someone interacts with it &mdash; and a 0&ndash;100 risk score where every point traces to a named rule.",
+        "tags": ["MCP", "Fraud", "Explainability", "Read-only"],
+        "status": None,
+        "headline_label": "READ-ONLY MCP TOOLS",
+        "headline_value": "6",
+        "headline_unit": "",
+        "github": "https://github.com/MelvTheGoat/web3-risk-mcp",
+        "live": None,
+        "problem": (
+            "People now ask an AI assistant whether a token is safe, and without on-chain evidence the "
+            "assistant can only guess &mdash; about honeypots that let you buy and not sell, rug pulls, "
+            "owner powers that can mint or freeze or raise the sell tax to 100%, and wallets funded out "
+            "of a hack or a mixer. Crypto losses are fast and final; there is no bank to call. The "
+            "assistant needs real data and a score it can defend line by line, not a verdict."
+        ),
+        "result": (
+            "Six read-only MCP tools across Ethereum, Base, Arbitrum, Polygon and BNB Chain &mdash; "
+            "risk scoring, wallet profiling, token checks, contract inspection and fund tracing "
+            "&mdash; returning a 0&ndash;100 score in which every contribution names its points, its "
+            "reason, its source and the rule that fired. The full rule table is generated from the "
+            "same code the scorer uses, and a test fails if the published document drifts from it."
+        ),
+        "flow": "MCP client → 6 read-only tools → findings (id, severity, reason, source)\n  → pure rule-based scorer: grouped duplicates, trust signals, a floor of 75 for decisive findings\n  → shared HTTP layer (cache, per-source rate limits, backoff) → Etherscan · GoPlus · DexScreener · public RPC",
+        "hardest_title": "Separating what is seen from what it is worth",
+        "hardest": (
+            "The analysis code only describes what it observes; a separate, pure function turns those "
+            "findings into points. That split is what makes the score testable and explainable rather "
+            "than a number that emerges from wherever the logic happened to live. Two rules follow "
+            "from it and matter more than the weights: findings describing the <em>same</em> problem "
+            "share a group and only the largest counts, so &ldquo;source not verified&rdquo; reported "
+            "by two providers cannot be charged twice; and decisive findings &mdash; honeypot, "
+            "sanctioned address, known exploiter, phishing &mdash; set a floor of 75, so no "
+            "accumulation of trust signals can bury one. Read-only is enforced the same structural "
+            "way: the RPC client refuses any method outside a short allow-list, so there is no code "
+            "path that can move funds even if the assistant driving it is confused."
+        ),
+        "measured_title": "What the results actually showed",
+        "measured": (
+            "Nothing yet, and the page says so rather than implying otherwise. The harness is built: "
+            "34 hand-checked addresses, each with a source for its label &mdash; 12 risky (a GoPlus "
+            "case-study honeypot, the SQUID rug pull, phishing wallets labelled by Etherscan and "
+            "ScamSniffer, the Ronin, Bybit, Euler and Wormhole exploiters, two Tornado Cash pools) "
+            "and 22 safe &mdash; scored for ROC AUC, precision, recall and both error directions at a "
+            "threshold of 50. It runs <em>twice</em>: the second pass switches off the local list of "
+            "known bad addresses, which six of the risky items sit on, so the numbers show what the "
+            "other signals catch on their own rather than what a lookup table already knew. Every API "
+            "response is recorded to a cassette so anyone can reproduce the exact figures offline, "
+            "with no keys. Results land when the first live run does."
+        ),
+        "next": "Run the evaluation live, publish both passes, and let the gap between them decide which rule weights are carrying real signal and which are inherited from the known-bad list.",
+        "stack": ["Python", "MCP SDK", "httpx", "Pydantic", "Etherscan V2", "GoPlus", "DexScreener", "Docker", "GitHub Actions", "uv"],
+    },
+    {
         "slug": "rag",
         "name": "Nigerian Fintech Compliance RAG Assistant",
         "short": "A regulatory Q&amp;A system over CBN circulars and the NDPA — hybrid retrieval, citation verification, and a refusal mechanism engineered as a first-class feature. Deployed and live.",
@@ -633,7 +688,7 @@ evaluation  → the same sentinel is what the metric counts</div>
         "summary": (
             "Decide the metric and the split before training anything, build the honest baseline first "
             "and report it even when it wins, and publish the number that did not flatter the project. "
-            "The argument running through all eight."
+            "The argument running through all nine."
         ),
         "lede": (
             "Every project on this site was built in the same order, and the order is the point. This "
@@ -699,6 +754,12 @@ evaluation  → the same sentinel is what the metric counts</div>
         between the constrained manager and the unconstrained weekly rebuild is the measurement the
         project exists to take; the fact that neither has beaten the average yet is a small sample and
         also not noise-free good news, and it gets written down as both.</p>
+
+        <p>The newest project has no results at all yet. <a href=\"../projects/web3-risk.html\">web3-risk-mcp</a>
+        ships with its evaluation harness built &mdash; 34 hand-checked addresses, two passes, every
+        API response recorded so the numbers can be reproduced offline &mdash; and its results section
+        says so plainly instead of implying otherwise. A harness built before the number exists is the
+        only version of this discipline that cannot be rationalised after the fact.</p>
 
         <p>And in <a href=\"../projects/reckon.html\">Reckon</a>, the prose-intake layer reads 94.4% of
         40 hand-labelled payment reports correctly &mdash; reports written by the same person who wrote
@@ -874,7 +935,7 @@ def build_home():
           <a class="btn" href="projects.html">View all projects</a>
         </div>
         <div class="reading-row">
-          {reading('SYSTEMS BUILT', '8', 'projects')}
+          {reading('SYSTEMS BUILT', '9', 'projects')}
           {reading('DEPLOYED &amp; LIVE', '5', 'public')}
           {reading('COST REDUCTION', '25&ndash;27', '%')}
         </div>
@@ -942,7 +1003,7 @@ def build_home():
 
     <div class="pattern-strip">
       <div class="wrap">
-        <div class="eyebrow">The pattern across all eight</div>
+        <div class="eyebrow">The pattern across all nine</div>
         <h2 style="color:#fff; max-width: 24ch;">Every model earns production through a measured comparison, not a vibe.</h2>
         <div class="pattern-grid">
           <div class="pattern-item"><span class="num">01</span><p>Evaluate before modeling &mdash; the metric and the split get decided before a single model is trained.</p></div>
@@ -991,7 +1052,7 @@ def build_projects_index():
     body = f"""  <main>
     <section class="tight">
       <div class="wrap">
-        <div class="eyebrow">Eight systems, one evaluation discipline</div>
+        <div class="eyebrow">Nine systems, one evaluation discipline</div>
         <h1>Projects</h1>
         <p class="lede" style="max-width:60ch;">Each page follows the same structure on purpose: the
         problem, the headline result, the architecture, the one decision most worth defending, and
@@ -1008,7 +1069,7 @@ def build_projects_index():
 """
     return page(
         f"Projects &mdash; {NAME}",
-        "Eight ML and AI projects: payment reconciliation, football match prediction, fraud detection, a deployed RAG assistant, credit risk, FPL squad optimization, demand forecasting, and causal inference.",
+        "Nine ML and AI projects: payment reconciliation, football match prediction, fraud detection, on-chain risk analysis over MCP, a deployed RAG assistant, credit risk, FPL squad optimization, demand forecasting, and causal inference.",
         "projects", body,
     )
 
@@ -1230,7 +1291,7 @@ def build_about():
           <p>B.Sc. in Statistics from the University of Ibadan (2021&ndash;2025), then a deliberate,
           self-directed move into machine learning and AI &mdash; now formalized through a Professional
           Diploma in Artificial Intelligence at SQI College of ICT. Not the traditional CS-degree route
-          into ML, and I don't treat that as something to explain away &mdash; the eight projects on
+          into ML, and I don't treat that as something to explain away &mdash; the nine projects on
           this site are the actual evidence of whether it worked.</p>
 
           <h3>Why Statistics shapes how I build</h3>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web3-risk-mcp &mdash; On-Chain Risk Analyst &mdash; Mayungbo Oluwatobi Melvyn</title>
+  <meta name="description" content="An MCP server that gives any AI assistant six read-only tools for checking a wallet, token or contract before someone interacts with it &mdash; and a 0&ndash;100 risk score where every point traces to a named rule.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="wrap">
+      <a class="brand" href="../index.html">Mayungbo<span class="dot">.</span>ml</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../projects.html" aria-current="page">Projects</a></li>
+        <li><a href="../writing.html">Writing</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../resume.html">Resume</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="project-hero">
+      <div class="wrap">
+        <div class="tags">
+          <span class="tag">MCP</span><span class="tag">Fraud</span><span class="tag">Explainability</span><span class="tag">Read-only</span>
+        </div>
+        <h1>web3-risk-mcp &mdash; On-Chain Risk Analyst</h1>
+        <p class="subtitle">An MCP server that gives any AI assistant six read-only tools for checking a wallet, token or contract before someone interacts with it &mdash; and a 0&ndash;100 risk score where every point traces to a named rule.</p>
+        <div class="meta-row">
+          
+          <a class="btn" href="https://github.com/MelvTheGoat/web3-risk-mcp" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">01</span>The problem</h2>
+        <p>People now ask an AI assistant whether a token is safe, and without on-chain evidence the assistant can only guess &mdash; about honeypots that let you buy and not sell, rug pulls, owner powers that can mint or freeze or raise the sell tax to 100%, and wallets funded out of a hack or a mixer. Crypto losses are fast and final; there is no bank to call. The assistant needs real data and a score it can defend line by line, not a verdict.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">02</span>The result</h2>
+        <div class="result-banner">
+          <div class="eyebrow">Headline number</div>
+          <p>Six read-only MCP tools across Ethereum, Base, Arbitrum, Polygon and BNB Chain &mdash; risk scoring, wallet profiling, token checks, contract inspection and fund tracing &mdash; returning a 0&ndash;100 score in which every contribution names its points, its reason, its source and the rule that fired. The full rule table is generated from the same code the scorer uses, and a test fails if the published document drifts from it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">03</span>Architecture</h2>
+        <div class="flow">MCP client → 6 read-only tools → findings (id, severity, reason, source)
+  → pure rule-based scorer: grouped duplicates, trust signals, a floor of 75 for decisive findings
+  → shared HTTP layer (cache, per-source rate limits, backoff) → Etherscan · GoPlus · DexScreener · public RPC</div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">04</span>The hardest decision</h2>
+        <div class="decision-block">
+          <h4>Separating what is seen from what it is worth</h4>
+          <p>The analysis code only describes what it observes; a separate, pure function turns those findings into points. That split is what makes the score testable and explainable rather than a number that emerges from wherever the logic happened to live. Two rules follow from it and matter more than the weights: findings describing the <em>same</em> problem share a group and only the largest counts, so &ldquo;source not verified&rdquo; reported by two providers cannot be charged twice; and decisive findings &mdash; honeypot, sanctioned address, known exploiter, phishing &mdash; set a floor of 75, so no accumulation of trust signals can bury one. Read-only is enforced the same structural way: the RPC client refuses any method outside a short allow-list, so there is no code path that can move funds even if the assistant driving it is confused.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">05</span>What the results actually showed</h2>
+        <div class="measured-box">
+          <div class="eyebrow">Measured, not assumed</div>
+          <p>Nothing yet, and the page says so rather than implying otherwise. The harness is built: 34 hand-checked addresses, each with a source for its label &mdash; 12 risky (a GoPlus case-study honeypot, the SQUID rug pull, phishing wallets labelled by Etherscan and ScamSniffer, the Ronin, Bybit, Euler and Wormhole exploiters, two Tornado Cash pools) and 22 safe &mdash; scored for ROC AUC, precision, recall and both error directions at a threshold of 50. It runs <em>twice</em>: the second pass switches off the local list of known bad addresses, which six of the risky items sit on, so the numbers show what the other signals catch on their own rather than what a lookup table already knew. Every API response is recorded to a cassette so anyone can reproduce the exact figures offline, with no keys. Results land when the first live run does.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">06</span>What's next</h2>
+        <p>Run the evaluation live, publish both passes, and let the gap between them decide which rule weights are carrying real signal and which are inherited from the known-bad list.</p>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <h2><span class="num">07</span>Stack</h2>
+        <div class="stack-tags">
+          <span class="tag">Python</span><span class="tag">MCP SDK</span><span class="tag">httpx</span><span class="tag">Pydantic</span><span class="tag">Etherscan V2</span><span class="tag">GoPlus</span><span class="tag">DexScreener</span><span class="tag">Docker</span><span class="tag">GitHub Actions</span><span class="tag">uv</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="next-project">
+        <span class="eyebrow" style="margin-bottom:0;">Next project</span>
+        <a href="rag.html">Nigerian Fintech Compliance RAG Assistant &rarr;</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span class="copy">&copy; 2026 Mayungbo Oluwatobi Melvyn &mdash; built with calibration in mind.</span>
+      <div class="foot-links">
+        <a href="mailto:mlvyn.t@gmail.com">Email</a>
+        <a href="https://github.com/MelvTheGoat" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://linkedin.com/in/oluwatobi-mayungbo-3a567026b" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+  <script src="../js/main.js"></script>
+
+</body>
+</html>
