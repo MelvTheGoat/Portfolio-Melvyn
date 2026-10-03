@@ -532,6 +532,59 @@ PROJECTS = [
         "stack": ["Python", "Prefect", "dbt-core", "DuckDB", "LightGBM", "MLflow", "Evidently", "FastAPI", "Docker", "GitHub Actions"],
     },
     {
+        "slug": "gptlab",
+        "name": "gptlab &mdash; A Small GPT, Trained From Scratch",
+        "short": "Decoder-only transformers from 1M to 100M parameters, written from scratch in PyTorch, with the scaling-law and ablation experiments queued and the harness built before any of them has been run.",
+        "tags": ["Deep Learning", "PyTorch", "Reproducibility", "In Progress"],
+        "status": None,
+        "headline_label": "RESULTS",
+        "headline_value": "PENDING",
+        "headline_unit": "",
+        "github": "https://github.com/MelvTheGoat/LLM",
+        "live": None,
+        "problem": (
+            "Reading about scaling laws, RoPE, RMSNorm and SwiGLU is not the same as knowing which of "
+            "them earns its place at a given size, on a given budget. The only way to find out is to "
+            "write the model, the training loop and the evaluation yourself and run the comparison "
+            "&mdash; on free hardware, which makes every design choice a real constraint rather than a "
+            "preference."
+        ),
+        "result": (
+            "Nothing measured yet, and the page says so rather than dressing the build up as a finding. "
+            "What exists is the apparatus: a decoder-only transformer whose config switches positional "
+            "encoding, norm type and placement, MLP type at matched parameter counts, weight tying and "
+            "QK-norm; a training loop with fp16 autocast and loss scaling for T4s, gradient "
+            "accumulation and DistributedDataParallel; and an evaluation covering validation loss, "
+            "perplexity, bits per byte and zero-shot HellaSwag."
+        ),
+        "flow": "FineWeb-Edu → hash-split train/validation, byte-level BPE at 8k / 16k / 32k\n  → uint16 token shards → decoder-only transformer (configurable RoPE · RMSNorm · SwiGLU · QK-norm)\n  → AdamW, warmup + cosine, fp16 + DDP on 2×T4 → loss · perplexity · bits per byte · HellaSwag\n  → every run re-runnable from its own resolved config and git commit",
+        "hardest_title": "Making a run reproducible before making it fast",
+        "hardest": (
+            "A training run that cannot be resumed exactly is a run whose results cannot be trusted "
+            "across a session boundary &mdash; and free GPU time comes in sessions. So the checkpoint "
+            "saves the model, the optimizer, the loss scaler, the data position <em>and</em> the random "
+            "states, and a test asserts that N steps straight produce bit-identical losses to N/2 "
+            "steps, a stop, a resume into fresh objects, and N/2 more. The same instinct runs through "
+            "the measurement: model FLOPs utilization is computed from the 6N rule plus the attention "
+            "term against real per-GPU peaks, and the formula is checked against PyTorch's own FLOP "
+            "counter in the tests rather than trusted because it was copied correctly."
+        ),
+        "measured_title": "What the results actually showed",
+        "measured": (
+            "Nothing yet &mdash; six experiments are queued and none has run: scaling across five to "
+            "six sizes with a power-law fit against Chinchilla, architecture ablations over two seeds, "
+            "a deliberate instability run at too high a learning rate, an efficiency sweep, and "
+            "evaluation. The choices already made are reasoned and written down with their reasons: a "
+            "16,384-token vocabulary rather than 32k, because at widths of 128 to 768 a 32k vocabulary "
+            "puts most of the smallest models' parameters into the embedding and output layers &mdash; "
+            "and the data job trains 8k, 16k and 32k tokenizers and measures bytes per token on "
+            "held-out text, so that trade-off gets a number rather than a justification. Every result, "
+            "when it lands, comes from a run log on the results branch."
+        ),
+        "next": "Run the smoke test and speed benchmark, publish the compute budget it implies, then work the queue in order &mdash; scaling first, because it sets the sizes every later experiment is run at.",
+        "stack": ["Python", "PyTorch", "FineWeb-Edu", "tokenizers (BPE)", "DDP", "Kaggle 2×T4", "Hugging Face Hub", "pytest"],
+    },
+    {
         "slug": "uplift",
         "name": "Uplift Modeling &amp; Causal Targeting Study",
         "short": "Heterogeneous treatment effect estimation on a randomized marketing trial, validated against simulated ground truth, with a placebo-test null result reported rather than shipped as a win.",
@@ -693,7 +746,7 @@ evaluation  → the same sentinel is what the metric counts</div>
         "summary": (
             "Decide the metric and the split before training anything, build the honest baseline first "
             "and report it even when it wins, and publish the number that did not flatter the project. "
-            "The argument running through all nine."
+            "The argument running through all ten."
         ),
         "lede": (
             "Every project on this site was built in the same order, and the order is the point. This "
@@ -933,16 +986,16 @@ def build_home():
         <div class="eyebrow">Lagos, Nigeria &mdash; Open to DS / ML / DL / AI roles</div>
         <h1>I build systems where the probability has to be right, not just plausible.</h1>
         <div class="role">Machine Learning &amp; AI Engineer</div>
-        <p class="lede">Payment reconciliation, fraud detection, credit risk, forecasting, causal
-        inference, a deployed RAG system, and two football models that publish their predictions
-        before the results are known &mdash; each one evaluated the way a production system is
-        evaluated, not the way a portfolio project usually is.</p>
+        <p class="lede">Payment reconciliation, on-chain risk any AI assistant can call, fraud
+        detection, credit risk, forecasting, causal inference, a deployed RAG system, and two football
+        models that publish their predictions before the results are known &mdash; each one evaluated
+        the way a production system is evaluated, not the way a portfolio project usually is.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Try the live demo &rarr;</a>
           <a class="btn" href="projects.html">View all projects</a>
         </div>
         <div class="reading-row">
-          {reading('SYSTEMS BUILT', '9', 'projects')}
+          {reading('SYSTEMS BUILT', '10', 'projects')}
           {reading('DEPLOYED &amp; LIVE', '6', 'public')}
           {reading('COST REDUCTION', '25&ndash;27', '%')}
         </div>
@@ -963,7 +1016,7 @@ def build_home():
             <p>Paste an address on Arc, Circle's payments chain, and get a 0&ndash;100 risk score with
             a reason for every point &mdash; Circle's own USDC and EURC blocklists, a simulated payment
             that signs nothing, and the fund trace behind it. The check that runs before money moves.
-            <span class="mono">(Free instance: the first visit after a quiet spell takes a moment to wake.)</span></p>
+            <span class="mono">(Free instance &mdash; the first visit takes a moment to wake.)</span></p>
           </div>
           <a class="btn btn-primary" href="{ARC_LIVE_URL}" target="_blank" rel="noopener">Check an address &rarr;</a>
         </div>
@@ -1013,7 +1066,7 @@ def build_home():
 
     <div class="pattern-strip">
       <div class="wrap">
-        <div class="eyebrow">The pattern across all nine</div>
+        <div class="eyebrow">The pattern across all ten</div>
         <h2 style="color:#fff; max-width: 24ch;">Every model earns production through a measured comparison, not a vibe.</h2>
         <div class="pattern-grid">
           <div class="pattern-item"><span class="num">01</span><p>Evaluate before modeling &mdash; the metric and the split get decided before a single model is trained.</p></div>
@@ -1062,7 +1115,7 @@ def build_projects_index():
     body = f"""  <main>
     <section class="tight">
       <div class="wrap">
-        <div class="eyebrow">Nine systems, one evaluation discipline</div>
+        <div class="eyebrow">Ten systems, one evaluation discipline</div>
         <h1>Projects</h1>
         <p class="lede" style="max-width:60ch;">Each page follows the same structure on purpose: the
         problem, the headline result, the architecture, the one decision most worth defending, and
@@ -1079,7 +1132,7 @@ def build_projects_index():
 """
     return page(
         f"Projects &mdash; {NAME}",
-        "Nine ML and AI projects: payment reconciliation, football match prediction, fraud detection, on-chain risk analysis over MCP, a deployed RAG assistant, credit risk, FPL squad optimization, demand forecasting, and causal inference.",
+        "Ten ML and AI projects: payment reconciliation, on-chain risk analysis over MCP, football match prediction, fraud detection, a deployed RAG assistant, credit risk, FPL squad optimization, demand forecasting, causal inference, and a GPT trained from scratch.",
         "projects", body,
     )
 
@@ -1301,7 +1354,7 @@ def build_about():
           <p>B.Sc. in Statistics from the University of Ibadan (2021&ndash;2025), then a deliberate,
           self-directed move into machine learning and AI &mdash; now formalized through a Professional
           Diploma in Artificial Intelligence at SQI College of ICT. Not the traditional CS-degree route
-          into ML, and I don't treat that as something to explain away &mdash; the nine projects on
+          into ML, and I don't treat that as something to explain away &mdash; the ten projects on
           this site are the actual evidence of whether it worked.</p>
 
           <h3>Why Statistics shapes how I build</h3>
