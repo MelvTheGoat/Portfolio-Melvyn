@@ -16,6 +16,7 @@ LOCATION = "Lagos, Nigeria"
 RAG_LIVE_URL = "https://nigerian-fintech-regulation-assistant-474115007874.europe-west1.run.app"
 CREDIT_LIVE_URL = "https://credit-risk-decisioning-702657773047.europe-west1.run.app/"
 PL_LIVE_URL = "https://premier-league-black.vercel.app"
+ARC_LIVE_URL = "https://arc-safe-send.onrender.com"
 # Set these to the public URL once the deployment is up; every page picks it up
 # automatically and the "Open live demo" button appears. Left as None, the
 # project simply shows its GitHub link instead of claiming a demo that isn't there.
@@ -180,6 +181,65 @@ PROJECTS = [
         "stack": ["Python", "FastAPI", "SQLAlchemy", "PostgreSQL", "scikit-learn", "Pydantic", "Jinja", "Docker", "Railway", "Claude API"],
     },
     {
+        "slug": "web3-risk",
+        "name": "web3-risk-mcp &mdash; On-Chain Risk Analyst",
+        "short": "An MCP server giving any AI assistant six read-only tools for checking a wallet, token or contract, with a 0&ndash;100 score where every point names its rule. Live as Arc Safe Send: the check that runs before USDC moves.",
+        "tags": ["MCP", "Fraud", "Explainability", "Deployed"],
+        "status": "LIVE",
+        "headline_label": "ROC AUC",
+        "headline_value": "0.981",
+        "headline_unit": "",
+        "github": "https://github.com/MelvTheGoat/web3-risk-mcp",
+        "live": ARC_LIVE_URL,
+        "problem": (
+            "People now ask an AI assistant whether a token is safe, and without on-chain evidence the "
+            "assistant can only guess &mdash; about honeypots that let you buy and not sell, rug pulls, "
+            "owner powers that can mint or freeze or raise the sell tax to 100%, and wallets funded out "
+            "of a hack or a mixer. Crypto losses are fast and final; there is no bank to call. The "
+            "assistant needs real evidence and a score it can defend line by line, not a verdict."
+        ),
+        "result": (
+            "ROC AUC 0.981 over 34 hand-labelled addresses, at 0.917 precision and 0.917 recall with a "
+            "threshold of 50. Six read-only MCP tools across Ethereum, Base, Arbitrum, Polygon, BNB "
+            "Chain and Arc, each contribution naming its points, its reason, its source and the rule "
+            "that fired &mdash; and the published rule table is generated from the same code the scorer "
+            "uses, with a test that fails if the document drifts."
+        ),
+        "flow": "MCP client (or the Arc Safe Send page) → 6 read-only tools → findings (id, severity, reason, source)\n  → pure rule-based scorer: grouped duplicates, trust signals, a floor of 75 for decisive findings\n  → shared HTTP layer (cache, per-source rate limits, backoff) → Etherscan · GoPlus · DexScreener · RPC",
+        "hardest_title": "Separating what is seen from what it is worth",
+        "hardest": (
+            "The analysis code only describes what it observes; a separate, pure function turns those "
+            "findings into points. That split is what makes the score testable and explainable rather "
+            "than a number emerging from wherever the logic happened to live. Two rules follow from it "
+            "and matter more than the weights: findings describing the <em>same</em> problem share a "
+            "group and only the largest counts, so &ldquo;source not verified&rdquo; reported by two "
+            "providers cannot be charged twice; and decisive findings &mdash; honeypot, sanctioned "
+            "address, known exploiter, phishing &mdash; set a floor of 75, so no accumulation of trust "
+            "signals can bury one. Read-only is structural too: the RPC client refuses any method "
+            "outside a short allow-list, so no code path can move funds even if the assistant driving "
+            "it is confused. On Arc that extends to the payment check itself &mdash; a 1 USDC transfer "
+            "is simulated with a read-only <span class=\"mono\">eth_call</span> from an invented "
+            "sender, so the page can say whether a payment would go through without anything being "
+            "signed or sent."
+        ),
+        "measured_title": "What the results actually showed",
+        "measured": (
+            "The headline 0.981 is the <em>optimistic</em> number, and the repository says so. Running "
+            "the first live evaluation found three real bugs and three rules that were too harsh; each "
+            "fix is its own commit. Because those rules were changed after seeing this dataset, the "
+            "before-tuning run is published alongside: ROC AUC 0.951, precision 0.786. The harness "
+            "also runs a second pass with the local list of known bad addresses switched off, and "
+            "recall drops from 0.917 to 0.75 &mdash; which locates exactly how much of the result is "
+            "the lookup table rather than the signals. Both errors are left visible rather than tuned "
+            "away: USDT scores 68 because its owner really can change balances (true finding, "
+            "debatable verdict for a major stablecoin), and SQUID scores 30 because the 2021 rug pull "
+            "already happened and today's contract looks ordinary. A larger held-out set that never "
+            "touched the rules is named as the fair next step."
+        ),
+        "next": "Score a held-out address set that was never used to tune a rule, and publish it next to the tuned numbers rather than in place of them.",
+        "stack": ["Python", "MCP SDK", "httpx", "Pydantic", "Etherscan V2", "GoPlus", "DexScreener", "Arc (Circle)", "Docker", "Render"],
+    },
+    {
         "slug": "premier-league",
         "name": "Premier League Match Predictor",
         "short": "A self-retraining match predictor that publishes three-way probabilities and a scoreline for every fixture, keeps every prediction it has ever made on the record, and retrains after each gameweek. Deployed and live.",
@@ -277,61 +337,6 @@ PROJECTS = [
         ),
         "next": "Test against a wider set of injected drift patterns to check whether the robustness advantage generalizes beyond the specific drift mechanism used in evaluation.",
         "stack": ["Python", "PyTorch", "LightGBM", "ONNX Runtime", "FastAPI", "Docker", "SHAP"],
-    },
-    {
-        "slug": "web3-risk",
-        "name": "web3-risk-mcp &mdash; On-Chain Risk Analyst",
-        "short": "An MCP server that gives any AI assistant six read-only tools for checking a wallet, token or contract before someone interacts with it &mdash; and a 0&ndash;100 risk score where every point traces to a named rule.",
-        "tags": ["MCP", "Fraud", "Explainability", "Read-only"],
-        "status": None,
-        "headline_label": "READ-ONLY MCP TOOLS",
-        "headline_value": "6",
-        "headline_unit": "",
-        "github": "https://github.com/MelvTheGoat/web3-risk-mcp",
-        "live": None,
-        "problem": (
-            "People now ask an AI assistant whether a token is safe, and without on-chain evidence the "
-            "assistant can only guess &mdash; about honeypots that let you buy and not sell, rug pulls, "
-            "owner powers that can mint or freeze or raise the sell tax to 100%, and wallets funded out "
-            "of a hack or a mixer. Crypto losses are fast and final; there is no bank to call. The "
-            "assistant needs real data and a score it can defend line by line, not a verdict."
-        ),
-        "result": (
-            "Six read-only MCP tools across Ethereum, Base, Arbitrum, Polygon and BNB Chain &mdash; "
-            "risk scoring, wallet profiling, token checks, contract inspection and fund tracing "
-            "&mdash; returning a 0&ndash;100 score in which every contribution names its points, its "
-            "reason, its source and the rule that fired. The full rule table is generated from the "
-            "same code the scorer uses, and a test fails if the published document drifts from it."
-        ),
-        "flow": "MCP client → 6 read-only tools → findings (id, severity, reason, source)\n  → pure rule-based scorer: grouped duplicates, trust signals, a floor of 75 for decisive findings\n  → shared HTTP layer (cache, per-source rate limits, backoff) → Etherscan · GoPlus · DexScreener · public RPC",
-        "hardest_title": "Separating what is seen from what it is worth",
-        "hardest": (
-            "The analysis code only describes what it observes; a separate, pure function turns those "
-            "findings into points. That split is what makes the score testable and explainable rather "
-            "than a number that emerges from wherever the logic happened to live. Two rules follow "
-            "from it and matter more than the weights: findings describing the <em>same</em> problem "
-            "share a group and only the largest counts, so &ldquo;source not verified&rdquo; reported "
-            "by two providers cannot be charged twice; and decisive findings &mdash; honeypot, "
-            "sanctioned address, known exploiter, phishing &mdash; set a floor of 75, so no "
-            "accumulation of trust signals can bury one. Read-only is enforced the same structural "
-            "way: the RPC client refuses any method outside a short allow-list, so there is no code "
-            "path that can move funds even if the assistant driving it is confused."
-        ),
-        "measured_title": "What the results actually showed",
-        "measured": (
-            "Nothing yet, and the page says so rather than implying otherwise. The harness is built: "
-            "34 hand-checked addresses, each with a source for its label &mdash; 12 risky (a GoPlus "
-            "case-study honeypot, the SQUID rug pull, phishing wallets labelled by Etherscan and "
-            "ScamSniffer, the Ronin, Bybit, Euler and Wormhole exploiters, two Tornado Cash pools) "
-            "and 22 safe &mdash; scored for ROC AUC, precision, recall and both error directions at a "
-            "threshold of 50. It runs <em>twice</em>: the second pass switches off the local list of "
-            "known bad addresses, which six of the risky items sit on, so the numbers show what the "
-            "other signals catch on their own rather than what a lookup table already knew. Every API "
-            "response is recorded to a cassette so anyone can reproduce the exact figures offline, "
-            "with no keys. Results land when the first live run does."
-        ),
-        "next": "Run the evaluation live, publish both passes, and let the gap between them decide which rule weights are carrying real signal and which are inherited from the known-bad list.",
-        "stack": ["Python", "MCP SDK", "httpx", "Pydantic", "Etherscan V2", "GoPlus", "DexScreener", "Docker", "GitHub Actions", "uv"],
     },
     {
         "slug": "rag",
@@ -755,11 +760,13 @@ evaluation  → the same sentinel is what the metric counts</div>
         project exists to take; the fact that neither has beaten the average yet is a small sample and
         also not noise-free good news, and it gets written down as both.</p>
 
-        <p>The newest project has no results at all yet. <a href=\"../projects/web3-risk.html\">web3-risk-mcp</a>
-        ships with its evaluation harness built &mdash; 34 hand-checked addresses, two passes, every
-        API response recorded so the numbers can be reproduced offline &mdash; and its results section
-        says so plainly instead of implying otherwise. A harness built before the number exists is the
-        only version of this discipline that cannot be rationalised after the fact.</p>
+        <p><a href=\"../projects/web3-risk.html\">web3-risk-mcp</a> publishes two numbers where one
+        would have been easier. Its first live evaluation found three bugs and three rules that were
+        too harsh; fixing them lifted ROC AUC from 0.951 to 0.981. Because those rules were changed
+        after seeing the dataset, the before-tuning run stays published next to the tuned one, and a
+        second pass with the known-bad list switched off shows recall falling from 0.917 to 0.75
+        &mdash; which says how much of the score is a lookup table rather than a signal. A number you
+        cannot decompose is a number nobody should act on.</p>
 
         <p>And in <a href=\"../projects/reckon.html\">Reckon</a>, the prose-intake layer reads 94.4% of
         40 hand-labelled payment reports correctly &mdash; reports written by the same person who wrote
@@ -904,7 +911,7 @@ def summary_line():
 # ---------------------------------------------------------------------------
 
 def build_home():
-    featured = PROJECTS[:3]  # reckon, premier-league, fraud
+    featured = PROJECTS[:3]  # reckon, web3-risk, premier-league
     cards = ""
     for p in featured:
         status = f'<span class="card-status">{p["status"]}</span>' if p["status"] else ""
@@ -936,7 +943,7 @@ def build_home():
         </div>
         <div class="reading-row">
           {reading('SYSTEMS BUILT', '9', 'projects')}
-          {reading('DEPLOYED &amp; LIVE', '5', 'public')}
+          {reading('DEPLOYED &amp; LIVE', '6', 'public')}
           {reading('COST REDUCTION', '25&ndash;27', '%')}
         </div>
       </div>
@@ -950,6 +957,18 @@ def build_home():
         </div>
 
         <div class="demo-callout">
+          <div>
+            <div class="status"><span class="pulse"></span>Live &mdash; Render</div>
+            <h3>Arc Safe Send</h3>
+            <p>Paste an address on Arc, Circle's payments chain, and get a 0&ndash;100 risk score with
+            a reason for every point &mdash; Circle's own USDC and EURC blocklists, a simulated payment
+            that signs nothing, and the fund trace behind it. The check that runs before money moves.
+            <span class="mono">(Free instance: the first visit after a quiet spell takes a moment to wake.)</span></p>
+          </div>
+          <a class="btn btn-primary" href="{ARC_LIVE_URL}" target="_blank" rel="noopener">Check an address &rarr;</a>
+        </div>
+
+        <div class="demo-callout" style="margin-top: 1.5rem;">
           <div>
             <div class="status"><span class="pulse"></span>Live &mdash; Railway</div>
             <h3>Reckon &mdash; Payment Reconciliation</h3>
@@ -971,19 +990,10 @@ def build_home():
           <a class="btn btn-primary" href="{PL_LIVE_URL}" target="_blank" rel="noopener">Open the site &rarr;</a>
         </div>
 
-        <div class="demo-callout" style="margin-top: 1.5rem;">
-          <div>
-            <div class="status"><span class="pulse"></span>Live &mdash; GCP Cloud Run</div>
-            <h3>Nigerian Fintech Compliance RAG Assistant</h3>
-            <p>Ask it a real regulatory question &mdash; CBN circulars, the NDPA &mdash; and get a
-            grounded, cited answer. It refuses rather than guesses when the source doesn't support one.</p>
-          </div>
-          <a class="btn btn-primary" href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Open the demo &rarr;</a>
-        </div>
-
         <p class="also-live">Also live &mdash;
-          <a href="{CREDIT_LIVE_URL}" target="_blank" rel="noopener">Credit Risk Decisioning &amp; Fairness Audit</a>
-          (GCP Cloud Run) and
+          <a href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Nigerian Fintech Compliance RAG Assistant</a>
+          and <a href="{CREDIT_LIVE_URL}" target="_blank" rel="noopener">Credit Risk Decisioning &amp; Fairness Audit</a>
+          (both GCP Cloud Run), and
           <a href="{FPL_LIVE_URL}" target="_blank" rel="noopener">FPL AI Manager</a>
           (GitHub Pages, republished every gameweek).
         </p>

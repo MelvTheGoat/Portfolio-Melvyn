@@ -96,11 +96,13 @@
         project exists to take; the fact that neither has beaten the average yet is a small sample and
         also not noise-free good news, and it gets written down as both.</p>
 
-        <p>The newest project has no results at all yet. <a href="../projects/web3-risk.html">web3-risk-mcp</a>
-        ships with its evaluation harness built &mdash; 34 hand-checked addresses, two passes, every
-        API response recorded so the numbers can be reproduced offline &mdash; and its results section
-        says so plainly instead of implying otherwise. A harness built before the number exists is the
-        only version of this discipline that cannot be rationalised after the fact.</p>
+        <p><a href="../projects/web3-risk.html">web3-risk-mcp</a> publishes two numbers where one
+        would have been easier. Its first live evaluation found three bugs and three rules that were
+        too harsh; fixing them lifted ROC AUC from 0.951 to 0.981. Because those rules were changed
+        after seeing the dataset, the before-tuning run stays published next to the tuned one, and a
+        second pass with the known-bad list switched off shows recall falling from 0.917 to 0.75
+        &mdash; which says how much of the score is a lookup table rather than a signal. A number you
+        cannot decompose is a number nobody should act on.</p>
 
         <p>And in <a href="../projects/reckon.html">Reckon</a>, the prose-intake layer reads 94.4% of
         40 hand-labelled payment reports correctly &mdash; reports written by the same person who wrote

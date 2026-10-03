@@ -49,7 +49,7 @@
             </div>
           <div class="reading">
               <span class="r-label">DEPLOYED &amp; LIVE</span>
-              <span class="r-value">5<span class="unit">public</span></span>
+              <span class="r-value">6<span class="unit">public</span></span>
               <span class="r-axis"></span>
             </div>
           <div class="reading">
@@ -69,6 +69,18 @@
         </div>
 
         <div class="demo-callout">
+          <div>
+            <div class="status"><span class="pulse"></span>Live &mdash; Render</div>
+            <h3>Arc Safe Send</h3>
+            <p>Paste an address on Arc, Circle's payments chain, and get a 0&ndash;100 risk score with
+            a reason for every point &mdash; Circle's own USDC and EURC blocklists, a simulated payment
+            that signs nothing, and the fund trace behind it. The check that runs before money moves.
+            <span class="mono">(Free instance: the first visit after a quiet spell takes a moment to wake.)</span></p>
+          </div>
+          <a class="btn btn-primary" href="https://arc-safe-send.onrender.com" target="_blank" rel="noopener">Check an address &rarr;</a>
+        </div>
+
+        <div class="demo-callout" style="margin-top: 1.5rem;">
           <div>
             <div class="status"><span class="pulse"></span>Live &mdash; Railway</div>
             <h3>Reckon &mdash; Payment Reconciliation</h3>
@@ -90,19 +102,10 @@
           <a class="btn btn-primary" href="https://premier-league-black.vercel.app" target="_blank" rel="noopener">Open the site &rarr;</a>
         </div>
 
-        <div class="demo-callout" style="margin-top: 1.5rem;">
-          <div>
-            <div class="status"><span class="pulse"></span>Live &mdash; GCP Cloud Run</div>
-            <h3>Nigerian Fintech Compliance RAG Assistant</h3>
-            <p>Ask it a real regulatory question &mdash; CBN circulars, the NDPA &mdash; and get a
-            grounded, cited answer. It refuses rather than guesses when the source doesn't support one.</p>
-          </div>
-          <a class="btn btn-primary" href="https://nigerian-fintech-regulation-assistant-474115007874.europe-west1.run.app" target="_blank" rel="noopener">Open the demo &rarr;</a>
-        </div>
-
         <p class="also-live">Also live &mdash;
-          <a href="https://credit-risk-decisioning-702657773047.europe-west1.run.app/" target="_blank" rel="noopener">Credit Risk Decisioning &amp; Fairness Audit</a>
-          (GCP Cloud Run) and
+          <a href="https://nigerian-fintech-regulation-assistant-474115007874.europe-west1.run.app" target="_blank" rel="noopener">Nigerian Fintech Compliance RAG Assistant</a>
+          and <a href="https://credit-risk-decisioning-702657773047.europe-west1.run.app/" target="_blank" rel="noopener">Credit Risk Decisioning &amp; Fairness Audit</a>
+          (both GCP Cloud Run), and
           <a href="https://melvthegoat.github.io/Fantasy-Premier-League/" target="_blank" rel="noopener">FPL AI Manager</a>
           (GitHub Pages, republished every gameweek).
         </p>
@@ -129,6 +132,19 @@
             </div>
           <span class="card-link"><span class="card-status">LIVE</span></span>
         </a>
+        <a class="card" href="projects/web3-risk.html" style="text-decoration:none;">
+          <div class="tags">
+            <span class="tag">MCP</span><span class="tag">Fraud</span><span class="tag">Explainability</span>
+          </div>
+          <h3>web3-risk-mcp &mdash; On-Chain Risk Analyst</h3>
+          <p class="card-desc">An MCP server giving any AI assistant six read-only tools for checking a wallet, token or contract, with a 0&ndash;100 score where every point names its rule. Live as Arc Safe Send: the check that runs before USDC moves.</p>
+          <div class="reading sm">
+              <span class="r-label">ROC AUC</span>
+              <span class="r-value">0.981</span>
+              <span class="r-axis"></span>
+            </div>
+          <span class="card-link"><span class="card-status">LIVE</span></span>
+        </a>
         <a class="card" href="projects/premier-league.html" style="text-decoration:none;">
           <div class="tags">
             <span class="tag">Forecasting</span><span class="tag">Calibration</span><span class="tag">Deployed</span>
@@ -141,19 +157,6 @@
               <span class="r-axis"></span>
             </div>
           <span class="card-link"><span class="card-status">LIVE</span></span>
-        </a>
-        <a class="card" href="projects/fraud.html" style="text-decoration:none;">
-          <div class="tags">
-            <span class="tag">Deep Learning</span><span class="tag">PyTorch</span><span class="tag">Fraud</span>
-          </div>
-          <h3>Sequence-Based Transaction Fraud Detection</h3>
-          <p class="card-desc">Three deep sequence architectures benchmarked against gradient boosting under an explicit cost model, with the sequence models' advantage isolated to robustness under drift specifically.</p>
-          <div class="reading sm">
-              <span class="r-label">P99 LATENCY</span>
-              <span class="r-value">5.1<span class="unit">ms</span></span>
-              <span class="r-axis"></span>
-            </div>
-          <span class="card-link">View project &rarr;</span>
         </a>
         </div>
       </div>
