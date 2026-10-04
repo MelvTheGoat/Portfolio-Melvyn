@@ -274,7 +274,11 @@ PROJECTS = [
             "the change. If those matter the model finds them; if not, it ignores them. The same "
             "discipline drives the cross-division Elo &mdash; rated over the Premier League, the "
             "Championship, League One and the cups on one scale &mdash; which is the only thing that "
-            "stops three promoted clubs a season starting as blanks."
+            "stops three promoted clubs a season starting as blanks. Manager spells now come from "
+            "Wikidata rather than a hand-kept file, read from both directions it records them in and "
+            "cleaned on the way &mdash; roles that are not being in charge are dropped, or Klopp's "
+            "assistant appears to have run Liverpool for nine years &mdash; which covers 84% of "
+            "club-matches since 2010-11 and 98&ndash;100% from 2018-19."
         ),
         "measured_title": "What the results actually showed",
         "measured": (
@@ -286,9 +290,19 @@ PROJECTS = [
             "reported rather than smoothed over: draws are almost never the argmax, so they are "
             "expressed as probability mass (typically 25&ndash;30%) instead of being forced into picks; "
             "and per-season accuracy ranges 57.1% / 52.0% / 47.1%, mostly a property of the seasons "
-            "&mdash; 2025-26 had eleven managerial changes &mdash; not of the model."
+            "&mdash; 2025-26 had eleven managerial changes &mdash; not of the model. In October 2026 "
+            "four candidate additions &mdash; Understat expected goals, an injury proxy, Wikidata "
+            "manager history, a long-memory xG rating &mdash; were each backtested over 2,660 matches "
+            "against the live version, with a paired bootstrap on the difference in log loss. "
+            "<strong>None was measurably better: every 95% interval crossed zero.</strong> Removing "
+            "the injury proxy from the best variant made it worse by about as much as adding it had "
+            "seemed to help, which is the size of the noise. Two shipped anyway, on grounds other "
+            "than the metric &mdash; a gameweek fix that closes a real leak of future results, and "
+            "the manager history, which replaces a hand-kept file that covered a season and a half "
+            "and had errors in it. The other two were dropped: a daily dependency on another site "
+            "for no measured gain is cost without benefit."
         ),
-        "next": "Automate team news. The injury and suspension file ships empty, and a club with no row is treated as unknown rather than fully fit &mdash; so the feature removes itself instead of biasing the model. Filling it reliably is the single largest gain left on the table.",
+        "next": "Accumulate enough availability history to test it as a feature. The FPL API publishes every player's status but keeps no archive &mdash; once a player recovers, the record that he was ever doubtful is gone &mdash; so a daily job writes down what changed and commits the log rather than rebuilding it, because it is the one input that cannot be regenerated from source. It is deliberately not a feature yet: a column populated from September 2026 onward has no training window behind it, and the feature layer already drops any column too sparse to learn from.",
         "stack": ["Python", "LightGBM", "scikit-learn", "Dixon-Coles Poisson", "SQLite", "Flask", "GitHub Actions", "Vercel"],
     },
     {
