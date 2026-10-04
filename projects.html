@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Projects &mdash; Mayungbo Oluwatobi Melvyn</title>
   <meta name="description" content="Ten ML and AI projects: payment reconciliation, on-chain risk analysis over MCP, football match prediction, fraud detection, a deployed RAG assistant, credit risk, FPL squad optimization, demand forecasting, causal inference, and a GPT trained from scratch.">
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -31,184 +31,164 @@
       <div class="wrap">
         <div class="eyebrow">Ten systems, one evaluation discipline</div>
         <h1>Projects</h1>
-        <p class="lede" style="max-width:60ch;">Each page follows the same structure on purpose: the
-        problem, the headline result, the architecture, the one decision most worth defending, and
-        what the results actually showed &mdash; including the parts that didn't flatter the project.</p>
+        <p class="lede" style="max-width:62ch;">Every detail page follows the same structure: the
+        problem, the headline result, the architecture, the one decision most worth defending, and what
+        the results actually showed &mdash; including the parts that didn't flatter the project.</p>
       </div>
     </section>
     <section class="tight">
       <div class="wrap">
-        <div class="project-grid full">
-        <a class="card" href="projects/reckon.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">Payments</span><span class="tag">Calibration</span><span class="tag">Human-in-the-loop</span><span class="tag">Deployed</span>
-            </div>
-            <h3>Reckon &mdash; Payment Reconciliation &amp; Review System</h3>
-            <p class="card-desc">Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira. Deployed, with the review queue open.</p>
+        <div class="project-grid">
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/reckon.html">Reckon &mdash; Payment Reconciliation &amp; Review System</a></h3>
+            <span class="badge-live"><span class="pulse"></span>Live</span>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">CLOSED WITHOUT A PERSON</span>
-              <span class="r-value">76.1<span class="unit">%</span></span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
+          <p class="pcard-desc">Matches incoming payments to invoices and queues only the cases it cannot prove.</p>
+          <div class="pcard-metric">76.1% closed without a person</div>
+          <div class="tags">
+            <span class="tag">Payments</span><span class="tag">Calibration</span><span class="tag">Human-in-the-loop</span>
           </div>
-        </a>
-        <a class="card" href="projects/web3-risk.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">MCP</span><span class="tag">Fraud</span><span class="tag">Explainability</span><span class="tag">Deployed</span>
-            </div>
-            <h3>web3-risk-mcp &mdash; On-Chain Risk Analyst</h3>
-            <p class="card-desc">An MCP server giving any AI assistant six read-only tools for checking a wallet, token or contract, with a 0&ndash;100 score where every point names its rule. Live as Arc Safe Send: the check that runs before USDC moves.</p>
+          <div class="pcard-links">
+            <a class="to-live" href="https://stack-production-d2a4.up.railway.app/review" target="_blank" rel="noopener">Live demo &nearr;</a>
+            <a href="projects/reckon.html">Details &rarr;</a>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">ROC AUC</span>
-              <span class="r-value">0.981</span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/web3-risk.html">web3-risk-mcp &mdash; On-Chain Risk Analyst</a></h3>
+            <span class="badge-live"><span class="pulse"></span>Live</span>
           </div>
-        </a>
-        <a class="card" href="projects/premier-league.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">Forecasting</span><span class="tag">Calibration</span><span class="tag">Deployed</span><span class="tag">LightGBM</span>
-            </div>
-            <h3>Premier League Match Predictor</h3>
-            <p class="card-desc">A self-retraining match predictor that publishes three-way probabilities and a scoreline for every fixture, keeps every prediction it has ever made on the record, and retrains after each gameweek. Deployed and live.</p>
+          <p class="pcard-desc">Read-only tools that let any AI assistant score a wallet, token or contract.</p>
+          <div class="pcard-metric">ROC AUC 0.981</div>
+          <div class="tags">
+            <span class="tag">MCP</span><span class="tag">Fraud</span><span class="tag">Explainability</span>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">OUTCOME ACCURACY</span>
-              <span class="r-value">52.1<span class="unit">%</span></span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
+          <div class="pcard-links">
+            <a class="to-live" href="https://arc-safe-send.onrender.com" target="_blank" rel="noopener">Live demo &nearr;</a>
+            <a href="projects/web3-risk.html">Details &rarr;</a>
           </div>
-        </a>
-        <a class="card" href="projects/fraud.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">Deep Learning</span><span class="tag">PyTorch</span><span class="tag">Fraud</span><span class="tag">Calibration</span>
-            </div>
-            <h3>Sequence-Based Transaction Fraud Detection</h3>
-            <p class="card-desc">Three deep sequence architectures benchmarked against gradient boosting under an explicit cost model, with the sequence models' advantage isolated to robustness under drift specifically.</p>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/premier-league.html">Premier League Match Predictor</a></h3>
+            <span class="badge-live"><span class="pulse"></span>Live</span>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">P99 LATENCY</span>
-              <span class="r-value">5.1<span class="unit">ms</span></span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-link">View &rarr;</span></div>
+          <p class="pcard-desc">Self-retraining match predictor that publishes probabilities before kick-off and never edits them.</p>
+          <div class="pcard-metric">52.1% outcome accuracy</div>
+          <div class="tags">
+            <span class="tag">Forecasting</span><span class="tag">Calibration</span><span class="tag">Deployed</span>
           </div>
-        </a>
-        <a class="card" href="projects/rag.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">RAG</span><span class="tag">LLM Evaluation</span><span class="tag">Deployed</span><span class="tag">GCP</span>
-            </div>
-            <h3>Nigerian Fintech Compliance RAG Assistant</h3>
-            <p class="card-desc">A regulatory Q&amp;A system over CBN circulars and the NDPA — hybrid retrieval, citation verification, and a refusal mechanism engineered as a first-class feature. Deployed and live.</p>
+          <div class="pcard-links">
+            <a class="to-live" href="https://premier-league-black.vercel.app" target="_blank" rel="noopener">Live demo &nearr;</a>
+            <a href="projects/premier-league.html">Details &rarr;</a>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">RECALL@5</span>
-              <span class="r-value">0.96</span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/rag.html">Nigerian Fintech Compliance RAG Assistant</a></h3>
+            <span class="badge-live"><span class="pulse"></span>Live</span>
           </div>
-        </a>
-        <a class="card" href="projects/credit-risk.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">Credit Risk</span><span class="tag">Calibration</span><span class="tag">Fairness</span><span class="tag">Deployed</span>
-            </div>
-            <h3>Credit Risk Decisioning &amp; Fairness Audit</h3>
-            <p class="card-desc">A full credit decisioning system prioritizing calibration over ranking, with reject inference correcting for approval-only observed outcomes and fairness treated as an explicit policy tradeoff.</p>
+          <p class="pcard-desc">Regulatory Q&amp;A over CBN circulars and the NDPA that refuses when unsure.</p>
+          <div class="pcard-metric">0.96 recall@5</div>
+          <div class="tags">
+            <span class="tag">RAG</span><span class="tag">LLM Evaluation</span><span class="tag">Deployed</span>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">PRIORITIZED METRIC</span>
-              <span class="r-value">ECE</span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
+          <div class="pcard-links">
+            <a class="to-live" href="https://nigerian-fintech-regulation-assistant-474115007874.europe-west1.run.app" target="_blank" rel="noopener">Live demo &nearr;</a>
+            <a href="projects/rag.html">Details &rarr;</a>
           </div>
-        </a>
-        <a class="card" href="projects/fpl.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">Optimization</span><span class="tag">Sequential Decisions</span><span class="tag">No-Leakage</span><span class="tag">Deployed</span>
-            </div>
-            <h3>FPL AI Manager</h3>
-            <p class="card-desc">Two models play the 2026/27 Fantasy Premier League season side by side &mdash; one under the real constraints, one with perfect freedom &mdash; to measure what continuity actually costs. Scored with real FPL points against the official gameweek average, and published live each gameweek.</p>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/credit-risk.html">Credit Risk Decisioning &amp; Fairness Audit</a></h3>
+            <span class="badge-live"><span class="pulse"></span>Live</span>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">COST OF CONTINUITY</span>
-              <span class="r-value">25<span class="unit">pts</span></span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-status">LIVE</span></div>
+          <p class="pcard-desc">Calibrated default probabilities, cost-optimal cutoffs and an explicit fairness audit.</p>
+          <div class="pcard-metric pending">Calibration-first decisioning</div>
+          <div class="tags">
+            <span class="tag">Credit Risk</span><span class="tag">Calibration</span><span class="tag">Fairness</span>
           </div>
-        </a>
-        <a class="card" href="projects/forecasting.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">Forecasting</span><span class="tag">MLOps</span><span class="tag">Drift Monitoring</span>
-            </div>
-            <h3>Self-Operating Demand Forecasting Platform</h3>
-            <p class="card-desc">An orchestrated, end-to-end forecasting pipeline for NYC taxi zones with asymmetric cost modeling, rolling-origin backtesting, and drift-triggered retraining gated on real cost improvement.</p>
+          <div class="pcard-links">
+            <a class="to-live" href="https://credit-risk-decisioning-702657773047.europe-west1.run.app/" target="_blank" rel="noopener">Live demo &nearr;</a>
+            <a href="projects/credit-risk.html">Details &rarr;</a>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">COST REDUCTION</span>
-              <span class="r-value">25<span class="unit">%</span></span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-link">View &rarr;</span></div>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/fpl.html">FPL AI Manager</a></h3>
+            <span class="badge-live"><span class="pulse"></span>Live</span>
           </div>
-        </a>
-        <a class="card" href="projects/gptlab.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">Deep Learning</span><span class="tag">PyTorch</span><span class="tag">Reproducibility</span><span class="tag">In Progress</span>
-            </div>
-            <h3>gptlab &mdash; A Small GPT, Trained From Scratch</h3>
-            <p class="card-desc">Decoder-only transformers from 1M to 100M parameters, written from scratch in PyTorch, with the scaling-law and ablation experiments queued and the harness built before any of them has been run.</p>
+          <p class="pcard-desc">Two models play a live FPL season to measure what squad continuity costs.</p>
+          <div class="pcard-metric">25-point cost of continuity</div>
+          <div class="tags">
+            <span class="tag">Optimization</span><span class="tag">Sequential Decisions</span><span class="tag">No-Leakage</span>
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">RESULTS</span>
-              <span class="r-value">PENDING</span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-link">View &rarr;</span></div>
+          <div class="pcard-links">
+            <a class="to-live" href="https://melvthegoat.github.io/Fantasy-Premier-League/" target="_blank" rel="noopener">Live demo &nearr;</a>
+            <a href="projects/fpl.html">Details &rarr;</a>
           </div>
-        </a>
-        <a class="card" href="projects/uplift.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              <span class="tag">Causal Inference</span><span class="tag">Experiment Design</span><span class="tag">Uplift</span>
-            </div>
-            <h3>Uplift Modeling &amp; Causal Targeting Study</h3>
-            <p class="card-desc">Heterogeneous treatment effect estimation on a randomized marketing trial, validated against simulated ground truth, with a placebo-test null result reported rather than shipped as a win.</p>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/fraud.html">Sequence-Based Transaction Fraud Detection</a></h3>
+            
           </div>
-          <div>
-            <div class="reading">
-              <span class="r-label">SAMPLE SIZE</span>
-              <span class="r-value">64,000</span>
-              <span class="r-axis"></span>
-            </div>
-            <div style="margin-top:10px;"><span class="card-link">View &rarr;</span></div>
+          <p class="pcard-desc">Deep sequence models against gradient boosting under an explicit cost model.</p>
+          <div class="pcard-metric">5.1 ms p99 latency</div>
+          <div class="tags">
+            <span class="tag">Deep Learning</span><span class="tag">PyTorch</span><span class="tag">Fraud</span>
           </div>
-        </a>
+          <div class="pcard-links">
+            
+            <a href="projects/fraud.html">Details &rarr;</a>
+          </div>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/forecasting.html">Self-Operating Demand Forecasting Platform</a></h3>
+            
+          </div>
+          <p class="pcard-desc">Hourly demand forecasts shipped at the cost-optimal quantile rather than the median.</p>
+          <div class="pcard-metric">25% expected cost cut</div>
+          <div class="tags">
+            <span class="tag">Forecasting</span><span class="tag">MLOps</span><span class="tag">Drift Monitoring</span>
+          </div>
+          <div class="pcard-links">
+            
+            <a href="projects/forecasting.html">Details &rarr;</a>
+          </div>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/gptlab.html">gptlab &mdash; A Small GPT, Trained From Scratch</a></h3>
+            
+          </div>
+          <p class="pcard-desc">Decoder-only transformers written from scratch, with the experiment harness built first.</p>
+          <div class="pcard-metric pending">Results pending</div>
+          <div class="tags">
+            <span class="tag">Deep Learning</span><span class="tag">PyTorch</span><span class="tag">Reproducibility</span>
+          </div>
+          <div class="pcard-links">
+            
+            <a href="projects/gptlab.html">Details &rarr;</a>
+          </div>
+        </article>
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="projects/uplift.html">Uplift Modeling &amp; Causal Targeting Study</a></h3>
+            
+          </div>
+          <p class="pcard-desc">Who an intervention actually moves, validated against simulated ground truth.</p>
+          <div class="pcard-metric">n = 64,000 randomized trial</div>
+          <div class="tags">
+            <span class="tag">Causal Inference</span><span class="tag">Experiment Design</span><span class="tag">Uplift</span>
+          </div>
+          <div class="pcard-links">
+            
+            <a href="projects/uplift.html">Details &rarr;</a>
+          </div>
+        </article>
         </div>
       </div>
     </section>

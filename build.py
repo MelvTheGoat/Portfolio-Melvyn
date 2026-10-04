@@ -13,6 +13,11 @@ EMAIL = "mlvyn.t@gmail.com"
 LINKEDIN = "https://linkedin.com/in/oluwatobi-mayungbo-3a567026b"
 GITHUB_PROFILE = "https://github.com/MelvTheGoat"
 LOCATION = "Lagos, Nigeria"
+PHOTO = "assets/photo_2026-08-16_14-26-22.jpg"
+ONE_LINER = (
+    "I build ML systems whose probabilities are trustworthy enough to act on &mdash; "
+    "payments, fraud, credit and forecasting, each one measured against an honest baseline."
+)
 RAG_LIVE_URL = "https://nigerian-fintech-regulation-assistant-474115007874.europe-west1.run.app"
 CREDIT_LIVE_URL = "https://credit-risk-decisioning-702657773047.europe-west1.run.app/"
 PL_LIVE_URL = "https://premier-league-black.vercel.app"
@@ -26,8 +31,8 @@ RECKON_LIVE_URL = "https://stack-production-d2a4.up.railway.app/review"
 FONT_LINK = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-    '<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&'
-    'family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">'
+    '<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&'
+    'family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">'
 )
 
 NAV_ITEMS = [
@@ -124,6 +129,9 @@ def reading(label, value, unit="", small=False):
 PROJECTS = [
     {
         "slug": "reckon",
+        "card_line": "Matches incoming payments to invoices and queues only the cases it cannot prove.",
+        "card_metric": "76.1% closed without a person",
+        "card_pending": False,
         "name": "Reckon &mdash; Payment Reconciliation &amp; Review System",
         "short": "Matches incoming payments to invoices and hands a person only the cases it cannot prove. Certain rules first, a calibrated model second, and a threshold drawn from what each mistake actually costs in naira. Deployed, with the review queue open.",
         "tags": ["Payments", "Calibration", "Human-in-the-loop", "Deployed"],
@@ -182,6 +190,9 @@ PROJECTS = [
     },
     {
         "slug": "web3-risk",
+        "card_line": "Read-only tools that let any AI assistant score a wallet, token or contract.",
+        "card_metric": "ROC AUC 0.981",
+        "card_pending": False,
         "name": "web3-risk-mcp &mdash; On-Chain Risk Analyst",
         "short": "An MCP server giving any AI assistant six read-only tools for checking a wallet, token or contract, with a 0&ndash;100 score where every point names its rule. Live as Arc Safe Send: the check that runs before USDC moves.",
         "tags": ["MCP", "Fraud", "Explainability", "Deployed"],
@@ -241,6 +252,9 @@ PROJECTS = [
     },
     {
         "slug": "premier-league",
+        "card_line": "Self-retraining match predictor that publishes probabilities before kick-off and never edits them.",
+        "card_metric": "52.1% outcome accuracy",
+        "card_pending": False,
         "name": "Premier League Match Predictor",
         "short": "A self-retraining match predictor that publishes three-way probabilities and a scoreline for every fixture, keeps every prediction it has ever made on the record, and retrains after each gameweek. Deployed and live.",
         "tags": ["Forecasting", "Calibration", "Deployed", "LightGBM"],
@@ -307,6 +321,9 @@ PROJECTS = [
     },
     {
         "slug": "fraud",
+        "card_line": "Deep sequence models against gradient boosting under an explicit cost model.",
+        "card_metric": "5.1 ms p99 latency",
+        "card_pending": False,
         "name": "Sequence-Based Transaction Fraud Detection",
         "short": "Three deep sequence architectures benchmarked against gradient boosting under an explicit cost model, with the sequence models' advantage isolated to robustness under drift specifically.",
         "tags": ["Deep Learning", "PyTorch", "Fraud", "Calibration"],
@@ -354,6 +371,9 @@ PROJECTS = [
     },
     {
         "slug": "rag",
+        "card_line": "Regulatory Q&amp;A over CBN circulars and the NDPA that refuses when unsure.",
+        "card_metric": "0.96 recall@5",
+        "card_pending": False,
         "name": "Nigerian Fintech Compliance RAG Assistant",
         "short": "A regulatory Q&amp;A system over CBN circulars and the NDPA — hybrid retrieval, citation verification, and a refusal mechanism engineered as a first-class feature. Deployed and live.",
         "tags": ["RAG", "LLM Evaluation", "Deployed", "GCP"],
@@ -400,6 +420,9 @@ PROJECTS = [
     },
     {
         "slug": "credit-risk",
+        "card_line": "Calibrated default probabilities, cost-optimal cutoffs and an explicit fairness audit.",
+        "card_metric": "Calibration-first decisioning",
+        "card_pending": True,
         "name": "Credit Risk Decisioning &amp; Fairness Audit",
         "short": "A full credit decisioning system prioritizing calibration over ranking, with reject inference correcting for approval-only observed outcomes and fairness treated as an explicit policy tradeoff.",
         "tags": ["Credit Risk", "Calibration", "Fairness", "Deployed"],
@@ -448,6 +471,9 @@ PROJECTS = [
     },
     {
         "slug": "fpl",
+        "card_line": "Two models play a live FPL season to measure what squad continuity costs.",
+        "card_metric": "25-point cost of continuity",
+        "card_pending": False,
         "name": "FPL AI Manager",
         "short": "Two models play the 2026/27 Fantasy Premier League season side by side &mdash; one under the real constraints, one with perfect freedom &mdash; to measure what continuity actually costs. Scored with real FPL points against the official gameweek average, and published live each gameweek.",
         "tags": ["Optimization", "Sequential Decisions", "No-Leakage", "Deployed"],
@@ -504,6 +530,9 @@ PROJECTS = [
     },
     {
         "slug": "forecasting",
+        "card_line": "Hourly demand forecasts shipped at the cost-optimal quantile rather than the median.",
+        "card_metric": "25% expected cost cut",
+        "card_pending": False,
         "name": "Self-Operating Demand Forecasting Platform",
         "short": "An orchestrated, end-to-end forecasting pipeline for NYC taxi zones with asymmetric cost modeling, rolling-origin backtesting, and drift-triggered retraining gated on real cost improvement.",
         "tags": ["Forecasting", "MLOps", "Drift Monitoring"],
@@ -547,6 +576,9 @@ PROJECTS = [
     },
     {
         "slug": "gptlab",
+        "card_line": "Decoder-only transformers written from scratch, with the experiment harness built first.",
+        "card_metric": "Results pending",
+        "card_pending": True,
         "name": "gptlab &mdash; A Small GPT, Trained From Scratch",
         "short": "Decoder-only transformers from 1M to 100M parameters, written from scratch in PyTorch, with the scaling-law and ablation experiments queued and the harness built before any of them has been run.",
         "tags": ["Deep Learning", "PyTorch", "Reproducibility", "In Progress"],
@@ -600,6 +632,9 @@ PROJECTS = [
     },
     {
         "slug": "uplift",
+        "card_line": "Who an intervention actually moves, validated against simulated ground truth.",
+        "card_metric": "n = 64,000 randomized trial",
+        "card_pending": False,
         "name": "Uplift Modeling &amp; Causal Targeting Study",
         "short": "Heterogeneous treatment effect estimation on a randomized marketing trial, validated against simulated ground truth, with a placebo-test null result reported rather than shipped as a win.",
         "tags": ["Causal Inference", "Experiment Design", "Uplift"],
@@ -977,119 +1012,108 @@ def summary_line():
 # HOME
 # ---------------------------------------------------------------------------
 
-def build_home():
-    featured = PROJECTS[:3]  # reckon, web3-risk, premier-league
-    cards = ""
-    for p in featured:
-        status = f'<span class="card-status">{p["status"]}</span>' if p["status"] else ""
-        cards += f"""
-        <a class="card" href="projects/{p['slug']}.html" style="text-decoration:none;">
+def project_card(p, depth=""):
+    """One scannable card: name, one line, one metric, tags, Live badge, two links."""
+    badge = ('<span class="badge-live"><span class="pulse"></span>Live</span>'
+             if p.get("status") == "LIVE" else "")
+    metric_cls = "pcard-metric pending" if p.get("card_pending") else "pcard-metric"
+    live_link = (f'<a class="to-live" href="{p["live"]}" target="_blank" rel="noopener">Live demo &nearr;</a>'
+                 if p.get("live") else "")
+    detail = f'{depth}projects/{p["slug"]}.html'
+    return f"""
+        <article class="pcard">
+          <div class="pcard-top">
+            <h3><a href="{detail}">{p['name']}</a></h3>
+            {badge}
+          </div>
+          <p class="pcard-desc">{p['card_line']}</p>
+          <div class="{metric_cls}">{p['card_metric']}</div>
           <div class="tags">
             {''.join(f'<span class="tag">{t}</span>' for t in p['tags'][:3])}
           </div>
-          <h3>{p['name']}</h3>
-          <p class="card-desc">{p['short']}</p>
-          {reading(p['headline_label'], p['headline_value'], p['headline_unit'], small=True)}
-          <span class="card-link">{status or 'View project &rarr;'}</span>
-        </a>"""
+          <div class="pcard-links">
+            {live_link}
+            <a href="{detail}">Details &rarr;</a>
+          </div>
+        </article>"""
+
+
+def ordered_projects():
+    """Live projects first; original order preserved inside each group."""
+    live = [p for p in PROJECTS if p.get("status") == "LIVE"]
+    rest = [p for p in PROJECTS if p.get("status") != "LIVE"]
+    return live + rest
+
+
+def build_home():
+    cards = "".join(project_card(p) for p in ordered_projects())
 
     body = f"""  <main>
     <section class="hero">
-      <div class="hero-grid" aria-hidden="true"></div>
-      <div class="wrap hero-inner">
-        <div class="eyebrow">Lagos, Nigeria &mdash; Open to DS / ML / DL / AI roles</div>
-        <h1>I build systems where the probability has to be right, not just plausible.</h1>
-        <div class="role">Machine Learning &amp; AI Engineer</div>
-        <p class="lede">Payment reconciliation, on-chain risk any AI assistant can call, fraud
-        detection, credit risk, forecasting, causal inference, a deployed RAG system, and two football
-        models that publish their predictions before the results are known &mdash; each one evaluated
-        the way a production system is evaluated, not the way a portfolio project usually is.</p>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Try the live demo &rarr;</a>
-          <a class="btn" href="projects.html">View all projects</a>
-        </div>
-        <div class="reading-row">
-          {reading('SYSTEMS BUILT', '10', 'projects')}
-          {reading('DEPLOYED &amp; LIVE', '6', 'public')}
-          {reading('COST REDUCTION', '25&ndash;27', '%')}
+      <div class="wrap">
+        <div class="hero-grid">
+          <div class="hero-photo">
+            <img src="{PHOTO}" alt="{NAME}" width="208" height="208">
+          </div>
+          <div>
+            <div class="location">{LOCATION} &mdash; open to DS / ML / DL / AI roles</div>
+            <h1>{NAME}</h1>
+            <div class="role">Machine Learning &amp; AI Engineer</div>
+            <p class="one-liner">{ONE_LINER}</p>
+            <div class="btn-row">
+              <a class="btn btn-primary" href="#projects">View projects</a>
+              <a class="btn" href="resume.html">Resume</a>
+              <a class="btn" href="mailto:{EMAIL}">Email</a>
+              <a class="btn" href="{GITHUB_PROFILE}" target="_blank" rel="noopener">GitHub</a>
+              <a class="btn" href="{LINKEDIN}" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section>
-      <div class="wrap">
-        <div class="section-head">
-          <h2>Running right now</h2>
-          <a href="projects.html">All projects &rarr;</a>
+    <div class="wrap">
+      <div class="stats-strip">
+        <div class="stat">
+          <span class="s-value">10</span>
+          <span class="s-label">Projects built</span>
         </div>
-
-        <div class="demo-callout">
-          <div>
-            <div class="status"><span class="pulse"></span>Live &mdash; Render</div>
-            <h3>Arc Safe Send</h3>
-            <p>Paste an address on Arc, Circle's payments chain, and get a 0&ndash;100 risk score with
-            a reason for every point &mdash; Circle's own USDC and EURC blocklists, a simulated payment
-            that signs nothing, and the fund trace behind it. The check that runs before money moves.
-            <span class="mono">(Free instance &mdash; the first visit takes a moment to wake.)</span></p>
-          </div>
-          <a class="btn btn-primary" href="{ARC_LIVE_URL}" target="_blank" rel="noopener">Check an address &rarr;</a>
+        <div class="stat">
+          <span class="s-value">6</span>
+          <span class="s-label">Deployed &amp; live</span>
         </div>
-
-        <div class="demo-callout" style="margin-top: 1.5rem;">
-          <div>
-            <div class="status"><span class="pulse"></span>Live &mdash; Railway</div>
-            <h3>Reckon &mdash; Payment Reconciliation</h3>
-            <p>The review queue itself: the cases the system could not prove, ranked by money at risk,
-            each with a suggested match and the reasons for it written out. 76.1% of a month's payments
-            never reach this screen at all.</p>
-          </div>
-          <a class="btn btn-primary" href="{RECKON_LIVE_URL}" target="_blank" rel="noopener">Open the queue &rarr;</a>
+        <div class="stat">
+          <span class="s-value">25&ndash;27<span class="unit">%</span></span>
+          <span class="s-label">Cost reduction</span>
         </div>
-
-        <div class="demo-callout" style="margin-top: 1.5rem;">
-          <div>
-            <div class="status"><span class="pulse"></span>Live &mdash; Vercel, retrained weekly</div>
-            <h3>Premier League Match Predictor</h3>
-            <p>Three-way probabilities and a scoreline for every fixture in the current gameweek, plus
-            the full record of what it predicted for every gameweek already played &mdash; published
-            before kick-off and never edited afterwards.</p>
-          </div>
-          <a class="btn btn-primary" href="{PL_LIVE_URL}" target="_blank" rel="noopener">Open the site &rarr;</a>
-        </div>
-
-        <p class="also-live">Also live &mdash;
-          <a href="{RAG_LIVE_URL}" target="_blank" rel="noopener">Nigerian Fintech Compliance RAG Assistant</a>
-          and <a href="{CREDIT_LIVE_URL}" target="_blank" rel="noopener">Credit Risk Decisioning &amp; Fairness Audit</a>
-          (both GCP Cloud Run), and
-          <a href="{FPL_LIVE_URL}" target="_blank" rel="noopener">FPL AI Manager</a>
-          (GitHub Pages, republished every gameweek).
-        </p>
       </div>
-    </section>
+    </div>
 
-    <section>
+    <section id="projects">
       <div class="wrap">
         <div class="section-head">
-          <h2>Featured work</h2>
-          <a href="projects.html">All projects &rarr;</a>
+          <h2>Projects</h2>
+          <a href="projects.html">Full write-ups &rarr;</a>
         </div>
         <div class="project-grid">{cards}
         </div>
       </div>
     </section>
 
-    <div class="pattern-strip">
+    <section class="tight">
       <div class="wrap">
-        <div class="eyebrow">The pattern across all ten</div>
-        <h2 style="color:#fff; max-width: 24ch;">Every model earns production through a measured comparison, not a vibe.</h2>
-        <div class="pattern-grid">
-          <div class="pattern-item"><span class="num">01</span><p>Evaluate before modeling &mdash; the metric and the split get decided before a single model is trained.</p></div>
-          <div class="pattern-item"><span class="num">02</span><p>Build the honest baseline first, and report it even when it wins.</p></div>
-          <div class="pattern-item"><span class="num">03</span><p>Report the negative result &mdash; a placebo test, a limitation, a number that didn't flatter the project.</p></div>
-          <div class="pattern-item"><span class="num">04</span><p>Calibration over ranking, wherever the output feeds a real decision.</p></div>
+        <div class="pattern">
+          <div class="eyebrow">The pattern across all ten</div>
+          <h2>Every model earns production through a measured comparison.</h2>
+          <div class="pattern-grid">
+            <div class="pattern-item"><span class="num">01</span><p>The metric and the split are decided before anything is trained.</p></div>
+            <div class="pattern-item"><span class="num">02</span><p>The honest baseline is built first, and reported even when it wins.</p></div>
+            <div class="pattern-item"><span class="num">03</span><p>The negative result gets published, not buried.</p></div>
+            <div class="pattern-item"><span class="num">04</span><p>Calibration over ranking, wherever the output feeds a real decision.</p></div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <div class="wrap">
       <div class="currently"><span class="pulse"></span>Currently teaching Machine Learning at SQI College of ICT, Ibadan &mdash; open to remote or relocation roles.</div>
@@ -1098,7 +1122,7 @@ def build_home():
 """
     return page(
         f"{NAME} &mdash; Machine Learning &amp; AI Engineer",
-        "Machine Learning and AI Engineer specializing in calibrated, rigorously evaluated systems: payment reconciliation, fraud detection, credit risk, forecasting, causal inference, a deployed RAG assistant, and live football prediction models.",
+        "Machine Learning and AI Engineer in Lagos: ten projects across payments, fraud, credit risk, forecasting, causal inference, RAG and on-chain risk — six of them deployed and live.",
         "home", body,
     )
 
@@ -1108,37 +1132,21 @@ def build_home():
 # ---------------------------------------------------------------------------
 
 def build_projects_index():
-    cards = ""
-    for p in PROJECTS:
-        status = f'<span class="card-status">{p["status"]}</span>' if p["status"] else '<span class="card-link">View &rarr;</span>'
-        cards += f"""
-        <a class="card" href="projects/{p['slug']}.html" style="text-decoration:none;">
-          <div class="card-main">
-            <div class="tags">
-              {''.join(f'<span class="tag">{t}</span>' for t in p['tags'])}
-            </div>
-            <h3>{p['name']}</h3>
-            <p class="card-desc">{p['short']}</p>
-          </div>
-          <div>
-            {reading(p['headline_label'], p['headline_value'], p['headline_unit'])}
-            <div style="margin-top:10px;">{status}</div>
-          </div>
-        </a>"""
+    cards = "".join(project_card(p) for p in ordered_projects())
 
     body = f"""  <main>
     <section class="tight">
       <div class="wrap">
         <div class="eyebrow">Ten systems, one evaluation discipline</div>
         <h1>Projects</h1>
-        <p class="lede" style="max-width:60ch;">Each page follows the same structure on purpose: the
-        problem, the headline result, the architecture, the one decision most worth defending, and
-        what the results actually showed &mdash; including the parts that didn't flatter the project.</p>
+        <p class="lede" style="max-width:62ch;">Every detail page follows the same structure: the
+        problem, the headline result, the architecture, the one decision most worth defending, and what
+        the results actually showed &mdash; including the parts that didn't flatter the project.</p>
       </div>
     </section>
     <section class="tight">
       <div class="wrap">
-        <div class="project-grid full">{cards}
+        <div class="project-grid">{cards}
         </div>
       </div>
     </section>
@@ -1159,13 +1167,18 @@ def build_project_page(p, idx):
     live_btn = f'<a class="btn btn-primary" href="{p["live"]}" target="_blank" rel="noopener">Open live demo &rarr;</a>' if p["live"] else ""
     github_btn = f'<a class="btn" href="{p["github"]}" target="_blank" rel="noopener">View on GitHub &rarr;</a>'
 
-    next_p = PROJECTS[(idx + 1) % len(PROJECTS)]
+    order = ordered_projects()
+    pos = order.index(p)
+    next_p = order[(pos + 1) % len(order)]
+    live_badge = ('<span class="badge-live"><span class="pulse"></span>Live</span>'
+                  if p.get("status") == "LIVE" else "")
 
     body = f"""  <main>
     <section class="project-hero">
       <div class="wrap">
         <div class="tags">
           {''.join(f'<span class="tag">{t}</span>' for t in p['tags'])}
+          {live_badge}
         </div>
         <h1>{p['name']}</h1>
         <p class="subtitle">{p['short']}</p>
@@ -1359,7 +1372,7 @@ def build_about():
     <section class="tight">
       <div class="wrap two-col">
         <div>
-          <div class="avatar-box"><img src="assets/photo_2026-08-16_14-26-22.jpg" alt="{NAME}" style="width: 100%; height: auto; border-radius: 4px;"></div>
+          <div class="avatar-box"><img src="{PHOTO}" alt="{NAME}"></div>
         </div>
         <div>
           <p class="lede">{summary_line()}</p>
