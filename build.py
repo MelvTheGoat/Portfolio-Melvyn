@@ -577,14 +577,14 @@ PROJECTS = [
     {
         "slug": "gptlab",
         "card_line": "Decoder-only transformers written from scratch, with the experiment harness built first.",
-        "card_metric": "Results pending",
-        "card_pending": True,
+        "card_metric": "20% MFU at 98M params on 2×T4",
+        "card_pending": False,
         "name": "gptlab &mdash; A Small GPT, Trained From Scratch",
-        "short": "Decoder-only transformers from 1M to 100M parameters, written from scratch in PyTorch, with the scaling-law and ablation experiments queued and the harness built before any of them has been run.",
-        "tags": ["Deep Learning", "PyTorch", "Reproducibility", "In Progress"],
+        "short": "Decoder-only transformers from 3M to 98M parameters, written from scratch in PyTorch. The smoke test and speed benchmark have run on 2×T4; the scaling-law and ablation experiments are next.",
+        "tags": ["Deep Learning", "PyTorch", "Benchmarking", "In Progress"],
         "status": None,
-        "headline_label": "RESULTS",
-        "headline_value": "PENDING",
+        "headline_label": "MFU AT 98M PARAMS",
+        "headline_value": "0.20",
         "headline_unit": "",
         "github": "https://github.com/MelvTheGoat/LLM",
         "live": None,
@@ -596,8 +596,10 @@ PROJECTS = [
             "preference."
         ),
         "result": (
-            "Nothing measured yet, and the page says so rather than dressing the build up as a finding. "
-            "What exists is the apparatus: a decoder-only transformer whose config switches positional "
+            "The smoke test and speed benchmark ran on Kaggle's 2×T4 in October 2026. With "
+            "torch.compile on, throughput across six model sizes runs from 625k tokens/s at 3M "
+            "parameters to 37k at 98M, and model FLOPs utilization rises with size from 0.11 to 0.20. "
+            "The six main experiments have not run yet. Underneath sits the apparatus: a decoder-only transformer whose config switches positional "
             "encoding, norm type and placement, MLP type at matched parameter counts, weight tying and "
             "QK-norm; a training loop with fp16 autocast and loss scaling for T4s, gradient "
             "accumulation and DistributedDataParallel; and an evaluation covering validation loss, "
@@ -609,26 +611,29 @@ PROJECTS = [
             "A training run that cannot be resumed exactly is a run whose results cannot be trusted "
             "across a session boundary &mdash; and free GPU time comes in sessions. So the checkpoint "
             "saves the model, the optimizer, the loss scaler, the data position <em>and</em> the random "
-            "states, and a test asserts that N steps straight produce bit-identical losses to N/2 "
-            "steps, a stop, a resume into fresh objects, and N/2 more. The same instinct runs through "
+            "states, and on CPU a test asserts that N steps straight produce bit-identical losses to "
+            "N/2 steps, a stop, a resume into fresh objects, and N/2 more &mdash; on the GPUs, as the "
+            "results below show, the honest claim turned out to be weaker. The same instinct runs through "
             "the measurement: model FLOPs utilization is computed from the 6N rule plus the attention "
             "term against real per-GPU peaks, and the formula is checked against PyTorch's own FLOP "
             "counter in the tests rather than trusted because it was copied correctly."
         ),
         "measured_title": "What the results actually showed",
         "measured": (
-            "Nothing yet &mdash; six experiments are queued and none has run: scaling across five to "
-            "six sizes with a power-law fit against Chinchilla, architecture ablations over two seeds, "
-            "a deliberate instability run at too high a learning rate, an efficiency sweep, and "
-            "evaluation. The choices already made are reasoned and written down with their reasons: a "
-            "16,384-token vocabulary rather than 32k, because at widths of 128 to 768 a 32k vocabulary "
-            "puts most of the smallest models' parameters into the embedding and output layers &mdash; "
-            "and the data job trains 8k, 16k and 32k tokenizers and measures bytes per token on "
-            "held-out text, so that trade-off gets a number rather than a justification. Every result, "
-            "when it lands, comes from a run log on the results branch."
+            "The resume test did not come back bit-identical on the GPUs. Over 200 steps resumed at "
+            "step 100, the resumed run's loss differs from the straight run by up to 0.0121 &mdash; "
+            "but two <em>straight</em> runs of the identical config differ from each other by up to "
+            "0.0137. The resumed run sits inside the noise two identical runs make on 2×T4 with fp16 "
+            "and DDP, so it is reported as that, not as a pass: the exactness the CPU test guarantees "
+            "does not survive onto the hardware. The benchmark itself ran 14 configurations. "
+            "torch.compile is the largest single lever: 2.6× the throughput at 3M parameters, falling "
+            "to 1.5× at 98M, and it roughly halves peak memory at every size (10.96 GB to 5.73 GB at "
+            "the smallest). The scaling fit, the architecture ablations, the stability run and "
+            "HellaSwag are all still queued, and nothing here says anything about them yet. Every "
+            "figure above comes from the run logs on the results branch."
         ),
-        "next": "Run the smoke test and speed benchmark, publish the compute budget it implies, then work the queue in order &mdash; scaling first, because it sets the sizes every later experiment is run at.",
-        "stack": ["Python", "PyTorch", "FineWeb-Edu", "tokenizers (BPE)", "DDP", "Kaggle 2×T4", "Hugging Face Hub", "pytest"],
+        "next": "Run the scaling experiment across the six benchmarked sizes with torch.compile on, fit the power law, and compare it with Chinchilla &mdash; scaling first, because it sets the sizes every later experiment is run at.",
+        "stack": ["Python", "PyTorch", "torch.compile", "FineWeb-Edu", "tokenizers (BPE)", "DDP", "Kaggle 2×T4", "Hugging Face Hub", "pytest"],
     },
     {
         "slug": "uplift",

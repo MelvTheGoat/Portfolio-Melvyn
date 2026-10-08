@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>gptlab &mdash; A Small GPT, Trained From Scratch &mdash; Mayungbo Oluwatobi Melvyn</title>
-  <meta name="description" content="Decoder-only transformers from 1M to 100M parameters, written from scratch in PyTorch, with the scaling-law and ablation experiments queued and the harness built before any of them has been run.">
+  <meta name="description" content="Decoder-only transformers from 3M to 98M parameters, written from scratch in PyTorch. The smoke test and speed benchmark have run on 2×T4; the scaling-law and ablation experiments are next.">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -30,11 +30,11 @@
     <section class="project-hero">
       <div class="wrap">
         <div class="tags">
-          <span class="tag">Deep Learning</span><span class="tag">PyTorch</span><span class="tag">Reproducibility</span><span class="tag">In Progress</span>
+          <span class="tag">Deep Learning</span><span class="tag">PyTorch</span><span class="tag">Benchmarking</span><span class="tag">In Progress</span>
           
         </div>
         <h1>gptlab &mdash; A Small GPT, Trained From Scratch</h1>
-        <p class="subtitle">Decoder-only transformers from 1M to 100M parameters, written from scratch in PyTorch, with the scaling-law and ablation experiments queued and the harness built before any of them has been run.</p>
+        <p class="subtitle">Decoder-only transformers from 3M to 98M parameters, written from scratch in PyTorch. The smoke test and speed benchmark have run on 2×T4; the scaling-law and ablation experiments are next.</p>
         <div class="meta-row">
           
           <a class="btn" href="https://github.com/MelvTheGoat/LLM" target="_blank" rel="noopener">View on GitHub &rarr;</a>
@@ -54,7 +54,7 @@
         <h2><span class="num">02</span>The result</h2>
         <div class="result-banner">
           <div class="eyebrow">Headline number</div>
-          <p>Nothing measured yet, and the page says so rather than dressing the build up as a finding. What exists is the apparatus: a decoder-only transformer whose config switches positional encoding, norm type and placement, MLP type at matched parameter counts, weight tying and QK-norm; a training loop with fp16 autocast and loss scaling for T4s, gradient accumulation and DistributedDataParallel; and an evaluation covering validation loss, perplexity, bits per byte and zero-shot HellaSwag.</p>
+          <p>The smoke test and speed benchmark ran on Kaggle's 2×T4 in October 2026. With torch.compile on, throughput across six model sizes runs from 625k tokens/s at 3M parameters to 37k at 98M, and model FLOPs utilization rises with size from 0.11 to 0.20. The six main experiments have not run yet. Underneath sits the apparatus: a decoder-only transformer whose config switches positional encoding, norm type and placement, MLP type at matched parameter counts, weight tying and QK-norm; a training loop with fp16 autocast and loss scaling for T4s, gradient accumulation and DistributedDataParallel; and an evaluation covering validation loss, perplexity, bits per byte and zero-shot HellaSwag.</p>
         </div>
       </div>
     </section>
@@ -74,7 +74,7 @@
         <h2><span class="num">04</span>The hardest decision</h2>
         <div class="decision-block">
           <h4>Making a run reproducible before making it fast</h4>
-          <p>A training run that cannot be resumed exactly is a run whose results cannot be trusted across a session boundary &mdash; and free GPU time comes in sessions. So the checkpoint saves the model, the optimizer, the loss scaler, the data position <em>and</em> the random states, and a test asserts that N steps straight produce bit-identical losses to N/2 steps, a stop, a resume into fresh objects, and N/2 more. The same instinct runs through the measurement: model FLOPs utilization is computed from the 6N rule plus the attention term against real per-GPU peaks, and the formula is checked against PyTorch's own FLOP counter in the tests rather than trusted because it was copied correctly.</p>
+          <p>A training run that cannot be resumed exactly is a run whose results cannot be trusted across a session boundary &mdash; and free GPU time comes in sessions. So the checkpoint saves the model, the optimizer, the loss scaler, the data position <em>and</em> the random states, and on CPU a test asserts that N steps straight produce bit-identical losses to N/2 steps, a stop, a resume into fresh objects, and N/2 more &mdash; on the GPUs, as the results below show, the honest claim turned out to be weaker. The same instinct runs through the measurement: model FLOPs utilization is computed from the 6N rule plus the attention term against real per-GPU peaks, and the formula is checked against PyTorch's own FLOP counter in the tests rather than trusted because it was copied correctly.</p>
         </div>
       </div>
     </section>
@@ -84,7 +84,7 @@
         <h2><span class="num">05</span>What the results actually showed</h2>
         <div class="measured-box">
           <div class="eyebrow">Measured, not assumed</div>
-          <p>Nothing yet &mdash; six experiments are queued and none has run: scaling across five to six sizes with a power-law fit against Chinchilla, architecture ablations over two seeds, a deliberate instability run at too high a learning rate, an efficiency sweep, and evaluation. The choices already made are reasoned and written down with their reasons: a 16,384-token vocabulary rather than 32k, because at widths of 128 to 768 a 32k vocabulary puts most of the smallest models' parameters into the embedding and output layers &mdash; and the data job trains 8k, 16k and 32k tokenizers and measures bytes per token on held-out text, so that trade-off gets a number rather than a justification. Every result, when it lands, comes from a run log on the results branch.</p>
+          <p>The resume test did not come back bit-identical on the GPUs. Over 200 steps resumed at step 100, the resumed run's loss differs from the straight run by up to 0.0121 &mdash; but two <em>straight</em> runs of the identical config differ from each other by up to 0.0137. The resumed run sits inside the noise two identical runs make on 2×T4 with fp16 and DDP, so it is reported as that, not as a pass: the exactness the CPU test guarantees does not survive onto the hardware. The benchmark itself ran 14 configurations. torch.compile is the largest single lever: 2.6× the throughput at 3M parameters, falling to 1.5× at 98M, and it roughly halves peak memory at every size (10.96 GB to 5.73 GB at the smallest). The scaling fit, the architecture ablations, the stability run and HellaSwag are all still queued, and nothing here says anything about them yet. Every figure above comes from the run logs on the results branch.</p>
         </div>
       </div>
     </section>
@@ -92,7 +92,7 @@
     <section class="detail-section">
       <div class="wrap">
         <h2><span class="num">06</span>What's next</h2>
-        <p>Run the smoke test and speed benchmark, publish the compute budget it implies, then work the queue in order &mdash; scaling first, because it sets the sizes every later experiment is run at.</p>
+        <p>Run the scaling experiment across the six benchmarked sizes with torch.compile on, fit the power law, and compare it with Chinchilla &mdash; scaling first, because it sets the sizes every later experiment is run at.</p>
       </div>
     </section>
 
@@ -100,7 +100,7 @@
       <div class="wrap">
         <h2><span class="num">07</span>Stack</h2>
         <div class="stack-tags">
-          <span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">FineWeb-Edu</span><span class="tag">tokenizers (BPE)</span><span class="tag">DDP</span><span class="tag">Kaggle 2×T4</span><span class="tag">Hugging Face Hub</span><span class="tag">pytest</span>
+          <span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">torch.compile</span><span class="tag">FineWeb-Edu</span><span class="tag">tokenizers (BPE)</span><span class="tag">DDP</span><span class="tag">Kaggle 2×T4</span><span class="tag">Hugging Face Hub</span><span class="tag">pytest</span>
         </div>
       </div>
     </section>
