@@ -248,8 +248,8 @@ PROJECTS = [
             "already happened and today's contract looks ordinary. A larger held-out set that never "
             "touched the rules is named as the fair next step."
         ),
-        "next": "Score a held-out address set that was never used to tune a rule, and publish it next to the tuned numbers rather than in place of them.",
-        "stack": ["Python", "MCP SDK", "httpx", "Pydantic", "Etherscan V2", "GoPlus", "DexScreener", "Arc (Circle)", "Docker", "Render"],
+        "next": "Deploy RiskAttestation to Arc mainnet. It is a small contract, with no owner and no admin, that lets anyone save a check as a public record: the address, the score, the rule-table version and a hash of the findings that anyone can rebuild. It passes 8 tests, including a 256-run fuzz test, under Arc&rsquo;s rules and on a fork of live mainnet, and a dry run puts the deploy at about 0.015 USDC. The deploy needs a funded wallet to sign it, and that step hasn&rsquo;t been taken yet. After that, score a held-out address set that was never used to tune a rule, and publish it next to the tuned numbers rather than in place of them.",
+        "stack": ["Python", "MCP SDK", "httpx", "Pydantic", "Etherscan V2", "GoPlus", "DexScreener", "Arc (Circle)", "Solidity", "Foundry", "Docker", "Render"],
     },
     {
         "slug": "premier-league",
