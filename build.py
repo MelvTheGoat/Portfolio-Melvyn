@@ -215,7 +215,13 @@ PROJECTS = [
             "threshold of 50. Six read-only MCP tools across Ethereum, Base, Arbitrum, Polygon, BNB "
             "Chain and Arc, each contribution naming its points, its reason, its source and the rule "
             "that fired &mdash; and the published rule table is generated from the same code the scorer "
-            "uses, with a test that fails if the document drifts."
+            "uses, with a test that fails if the document drifts. A check can also be saved as a public, "
+            "tamper-proof record: RiskAttestation, a contract with no owner and no admin that holds no "
+            "money, is live on Arc mainnet at <a href=\"https://explorer.arc.io/address/0x5984e03F045AEE669444eA69b0f3869A02535054\" "
+            "target=\"_blank\" rel=\"noopener\"><span class=\"mono\">0x5984&hellip;5054</span></a>. It "
+            "stores the address, the score, the rule-table version and a hash of the findings that "
+            "anyone can rebuild, and it passed 8 tests including a 256-run fuzz test on a fork of live "
+            "mainnet before it was deployed."
         ),
         "flow": "MCP client (or the Arc Safe Send page) → 6 read-only tools → findings (id, severity, reason, source)\n  → pure rule-based scorer: grouped duplicates, trust signals, a floor of 75 for decisive findings\n  → shared HTTP layer (cache, per-source rate limits, backoff) → Etherscan · GoPlus · DexScreener · RPC",
         "hardest_title": "Separating what is seen from what it is worth",
@@ -248,7 +254,7 @@ PROJECTS = [
             "already happened and today's contract looks ordinary. A larger held-out set that never "
             "touched the rules is named as the fair next step."
         ),
-        "next": "Deploy RiskAttestation to Arc mainnet. It is a small contract, with no owner and no admin, that lets anyone save a check as a public record: the address, the score, the rule-table version and a hash of the findings that anyone can rebuild. It passes 8 tests, including a 256-run fuzz test, under Arc&rsquo;s rules and on a fork of live mainnet, and a dry run puts the deploy at about 0.015 USDC. The deploy needs a funded wallet to sign it, and that step hasn&rsquo;t been taken yet. After that, score a held-out address set that was never used to tune a rule, and publish it next to the tuned numbers rather than in place of them.",
+        "next": "Score a held-out address set that was never used to tune a rule, and publish it next to the tuned numbers rather than in place of them.",
         "stack": ["Python", "MCP SDK", "httpx", "Pydantic", "Etherscan V2", "GoPlus", "DexScreener", "Arc (Circle)", "Solidity", "Foundry", "Docker", "Render"],
     },
     {
