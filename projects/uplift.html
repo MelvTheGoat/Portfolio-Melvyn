@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Uplift Modeling &amp; Causal Targeting Study &mdash; Mayungbo Oluwatobi Melvyn</title>
-  <meta name="description" content="Heterogeneous treatment effect estimation on a randomized marketing trial, validated against simulated ground truth, with a placebo-test null result reported rather than shipped as a win.">
+  <meta name="description" content="Who buys <em>because</em> of a campaign, on a 64,000-customer randomized trial &mdash; with a shuffle-test null result reported rather than shipped as a win. Live as an interactive study and a browser tool that runs the whole analysis on your own CSV.">
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -30,13 +30,13 @@
     <section class="project-hero">
       <div class="wrap">
         <div class="tags">
-          <span class="tag">Causal Inference</span><span class="tag">Experiment Design</span><span class="tag">Uplift</span>
-          
+          <span class="tag">Causal Inference</span><span class="tag">Experiment Design</span><span class="tag">Uplift</span><span class="tag">Deployed</span>
+          <span class="badge-live"><span class="pulse"></span>Live</span>
         </div>
         <h1>Uplift Modeling &amp; Causal Targeting Study</h1>
-        <p class="subtitle">Heterogeneous treatment effect estimation on a randomized marketing trial, validated against simulated ground truth, with a placebo-test null result reported rather than shipped as a win.</p>
+        <p class="subtitle">Who buys <em>because</em> of a campaign, on a 64,000-customer randomized trial &mdash; with a shuffle-test null result reported rather than shipped as a win. Live as an interactive study and a browser tool that runs the whole analysis on your own CSV.</p>
         <div class="meta-row">
-          
+          <a class="btn btn-primary" href="https://melvthegoat.github.io/Uplift-Modelling-Decision/" target="_blank" rel="noopener">Open live demo &rarr;</a>
           <a class="btn" href="https://github.com/MelvTheGoat/Uplift-Modelling-Decision" target="_blank" rel="noopener">View on GitHub &rarr;</a>
         </div>
       </div>
@@ -54,7 +54,7 @@
         <h2><span class="num">02</span>The result</h2>
         <div class="result-banner">
           <div class="eyebrow">Headline number</div>
-          <p>S-, T-, and X-learners plus a causal forest, each validated against simulated data with known individual treatment effects &mdash; since true counterfactuals are unobservable and no accuracy metric exists to check an uplift model against on real data alone.</p>
+          <p>On the Hillstrom trial &mdash; 64,000 customers split by coin flip &mdash; the email works: 1.25 purchases per 100 against 0.57 with no email. Choosing <em>who</em> to email is not proven to help: the best of four methods earned about 10 extra sales over emailing the same number at random, with an honest range of &minus;2 to +22 that includes zero. The finding worth acting on is one nobody asked for: getting the targeting right is worth about $1,390, while lifting the budget cap from 30% to 85% of the list is worth about $3,170. Every estimator was first checked against simulated customers whose individual response is known, before it was trusted on real data.</p>
         </div>
       </div>
     </section>
@@ -62,9 +62,10 @@
     <section class="detail-section">
       <div class="wrap">
         <h2><span class="num">03</span>Architecture</h2>
-        <div class="flow">randomized trial (n=64,000) → S/T/X-learners + causal forest
-  → Qini curves, AUUC, decile uplift tables → placebo, covariate-balance, seed-stability tests
-  → budget-constrained targeting policy</div>
+        <div class="flow">simulated customers with known effects → validate every estimator first
+  → randomized trial (n=64,000) → S/T/X-learners + causal forest
+  → Qini curves, AUUC, decile uplift tables → shuffle, covariate-balance, seed-stability tests
+  → budget-constrained targeting policy → same analysis ported to the browser, parity-tested</div>
       </div>
     </section>
 
@@ -73,7 +74,7 @@
         <h2><span class="num">04</span>The hardest decision</h2>
         <div class="decision-block">
           <h4>Why the placebo test mattered enough to report a null result</h4>
-          <p>The placebo test &mdash; assigning a fake treatment and checking whether the model finds a spurious effect &mdash; showed the ranking was indistinguishable from noise on the primary arm. That's the test that actually tells you whether an uplift model is finding a real signal or an artifact of the estimator. Reporting it, rather than quietly moving on to a more flattering result, is what makes the rest of the analysis trustworthy.</p>
+          <p>The shuffle test &mdash; re-running everything with &ldquo;who got the email&rdquo; shuffled at random, so there is nothing to find by construction &mdash; scored <em>better</em> than the real campaign one run in five. The ranking was indistinguishable from noise on the men's arm. That's the test that actually tells you whether an uplift model is finding a real signal or an artifact of the estimator. Reporting it, rather than quietly moving on to a more flattering result, is what makes the rest of the analysis trustworthy. And so a null result could not just mean broken code, the women's campaign went through exactly the same pipeline and passed every check: a clear positive score, a range that excludes zero, and a shuffle test it comfortably survives.</p>
         </div>
       </div>
     </section>
@@ -83,7 +84,7 @@
         <h2><span class="num">05</span>What the results actually showed</h2>
         <div class="measured-box">
           <div class="eyebrow">Measured, not assumed</div>
-          <p>18.6% of customers were flagged as negative-uplift &mdash; predicted to respond <em>worse</em> to the intervention &mdash; and that segment measured +0.44 percentage points against the randomized holdout when checked. A negative result, reported plainly rather than shipped as a targeting win, because a decision memo that hides its own estimator's failure mode is worse than useless to whoever has to act on it.</p>
+          <p>The model flagged 7,916 customers (18.6%) as harmed by the email, predicting an average of &minus;0.87 points. The trial says that group actually <em>gained</em> +0.44 points, with an interval of +0.02 to +0.87 that excludes zero &mdash; these were not sleeping dogs. A negative result, reported plainly rather than shipped as a targeting win, because a decision memo that hides its own estimator's failure mode is worse than useless to whoever has to act on it. The live tool carries the same discipline: it reports what a test <em>could</em> have detected before saying whether anything worked, and its JavaScript port of the Python analysis is held to it by a test that generates a campaign, runs both, and fails if any number disagrees.</p>
         </div>
       </div>
     </section>
@@ -99,7 +100,7 @@
       <div class="wrap">
         <h2><span class="num">07</span>Stack</h2>
         <div class="stack-tags">
-          <span class="tag">Python</span><span class="tag">EconML</span><span class="tag">CausalML</span><span class="tag">LightGBM</span><span class="tag">scikit-learn</span><span class="tag">Experiment Design</span>
+          <span class="tag">Python</span><span class="tag">EconML</span><span class="tag">LightGBM</span><span class="tag">scikit-learn</span><span class="tag">JavaScript</span><span class="tag">SVG charts</span><span class="tag">GitHub Pages</span>
         </div>
       </div>
     </section>
@@ -107,7 +108,7 @@
     <div class="wrap">
       <div class="next-project">
         <span class="eyebrow" style="margin-bottom:0;">Next project</span>
-        <a href="reckon.html">Reckon &mdash; Payment Reconciliation &amp; Review System &rarr;</a>
+        <a href="fraud.html">Sequence-Based Transaction Fraud Detection &rarr;</a>
       </div>
     </div>
   </main>

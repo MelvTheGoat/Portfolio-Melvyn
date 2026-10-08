@@ -22,6 +22,7 @@ RAG_LIVE_URL = "https://nigerian-fintech-regulation-assistant-474115007874.europ
 CREDIT_LIVE_URL = "https://credit-risk-decisioning-702657773047.europe-west1.run.app/"
 PL_LIVE_URL = "https://premier-league-black.vercel.app"
 ARC_LIVE_URL = "https://arc-safe-send.onrender.com"
+UPLIFT_LIVE_URL = "https://melvthegoat.github.io/Uplift-Modelling-Decision/"
 # Set these to the public URL once the deployment is up; every page picks it up
 # automatically and the "Open live demo" button appears. Left as None, the
 # project simply shows its GitHub link instead of claiming a demo that isn't there.
@@ -637,18 +638,18 @@ PROJECTS = [
     },
     {
         "slug": "uplift",
-        "card_line": "Who an intervention actually moves, validated against simulated ground truth.",
-        "card_metric": "n = 64,000 randomized trial",
+        "card_line": "Who a campaign actually moves, plus an in-browser tool to analyse your own.",
+        "card_metric": "Email lifts purchases 0.57 → 1.25 per 100",
         "card_pending": False,
         "name": "Uplift Modeling &amp; Causal Targeting Study",
-        "short": "Heterogeneous treatment effect estimation on a randomized marketing trial, validated against simulated ground truth, with a placebo-test null result reported rather than shipped as a win.",
-        "tags": ["Causal Inference", "Experiment Design", "Uplift"],
-        "status": None,
+        "short": "Who buys <em>because</em> of a campaign, on a 64,000-customer randomized trial &mdash; with a shuffle-test null result reported rather than shipped as a win. Live as an interactive study and a browser tool that runs the whole analysis on your own CSV.",
+        "tags": ["Causal Inference", "Experiment Design", "Uplift", "Deployed"],
+        "status": "LIVE",
         "headline_label": "SAMPLE SIZE",
         "headline_value": "64,000",
         "headline_unit": "",
         "github": "https://github.com/MelvTheGoat/Uplift-Modelling-Decision",
-        "live": None,
+        "live": UPLIFT_LIVE_URL,
         "problem": (
             "Standard propensity models identify customers likely to convert &mdash; not customers who "
             "convert <em>because of</em> an intervention. Targeting on propensity alone wastes spend on "
@@ -656,29 +657,42 @@ PROJECTS = [
             "would actually move."
         ),
         "result": (
-            "S-, T-, and X-learners plus a causal forest, each validated against simulated data with "
-            "known individual treatment effects &mdash; since true counterfactuals are unobservable and "
-            "no accuracy metric exists to check an uplift model against on real data alone."
+            "On the Hillstrom trial &mdash; 64,000 customers split by coin flip &mdash; the email "
+            "works: 1.25 purchases per 100 against 0.57 with no email. Choosing <em>who</em> to email "
+            "is not proven to help: the best of four methods earned about 10 extra sales over emailing "
+            "the same number at random, with an honest range of &minus;2 to +22 that includes zero. "
+            "The finding worth acting on is one nobody asked for: getting the targeting right is worth "
+            "about $1,390, while lifting the budget cap from 30% to 85% of the list is worth about "
+            "$3,170. Every estimator was first checked against simulated customers whose individual "
+            "response is known, before it was trusted on real data."
         ),
-        "flow": "randomized trial (n=64,000) → S/T/X-learners + causal forest\n  → Qini curves, AUUC, decile uplift tables → placebo, covariate-balance, seed-stability tests\n  → budget-constrained targeting policy",
+        "flow": "simulated customers with known effects → validate every estimator first\n  → randomized trial (n=64,000) → S/T/X-learners + causal forest\n  → Qini curves, AUUC, decile uplift tables → shuffle, covariate-balance, seed-stability tests\n  → budget-constrained targeting policy → same analysis ported to the browser, parity-tested",
         "hardest_title": "Why the placebo test mattered enough to report a null result",
         "hardest": (
-            "The placebo test &mdash; assigning a fake treatment and checking whether the model finds a "
-            "spurious effect &mdash; showed the ranking was indistinguishable from noise on the primary "
-            "arm. That's the test that actually tells you whether an uplift model is finding a real "
+            "The shuffle test &mdash; re-running everything with &ldquo;who got the email&rdquo; "
+            "shuffled at random, so there is nothing to find by construction &mdash; scored "
+            "<em>better</em> than the real campaign one run in five. The ranking was "
+            "indistinguishable from noise on the men's arm. That's the test that actually tells you whether an uplift model is finding a real "
             "signal or an artifact of the estimator. Reporting it, rather than quietly moving on to a "
-            "more flattering result, is what makes the rest of the analysis trustworthy."
+            "more flattering result, is what makes the rest of the analysis trustworthy. And so a "
+            "null result could not just mean broken code, the women's campaign went through exactly "
+            "the same pipeline and passed every check: a clear positive score, a range that excludes "
+            "zero, and a shuffle test it comfortably survives."
         ),
         "measured_title": "What the results actually showed",
         "measured": (
-            "18.6% of customers were flagged as negative-uplift &mdash; predicted to respond "
-            "<em>worse</em> to the intervention &mdash; and that segment measured +0.44 percentage "
-            "points against the randomized holdout when checked. A negative result, reported plainly "
-            "rather than shipped as a targeting win, because a decision memo that hides its own "
-            "estimator's failure mode is worse than useless to whoever has to act on it."
+            "The model flagged 7,916 customers (18.6%) as harmed by the email, predicting an average "
+            "of &minus;0.87 points. The trial says that group actually <em>gained</em> +0.44 points, "
+            "with an interval of +0.02 to +0.87 that excludes zero &mdash; these were not sleeping "
+            "dogs. A negative result, reported plainly rather than shipped as a targeting win, "
+            "because a decision memo that hides its own estimator's failure mode is worse than useless "
+            "to whoever has to act on it. The live tool carries the same discipline: it reports what "
+            "a test <em>could</em> have detected before saying whether anything worked, and its "
+            "JavaScript port of the Python analysis is held to it by a test that generates a "
+            "campaign, runs both, and fails if any number disagrees."
         ),
         "next": "Re-run with a larger trial to check whether the placebo-test noise floor shrinks with more data, or reflects a genuine ceiling on detectable heterogeneity in this population.",
-        "stack": ["Python", "EconML", "CausalML", "LightGBM", "scikit-learn", "Experiment Design"],
+        "stack": ["Python", "EconML", "LightGBM", "scikit-learn", "JavaScript", "SVG charts", "GitHub Pages"],
     },
 ]
 
@@ -1084,7 +1098,7 @@ def build_home():
           <span class="s-label">Projects built</span>
         </div>
         <div class="stat">
-          <span class="s-value">6</span>
+          <span class="s-value">7</span>
           <span class="s-label">Deployed &amp; live</span>
         </div>
         <div class="stat">
@@ -1127,7 +1141,7 @@ def build_home():
 """
     return page(
         f"{NAME} &mdash; Machine Learning &amp; AI Engineer",
-        "Machine Learning and AI Engineer in Lagos: ten projects across payments, fraud, credit risk, forecasting, causal inference, RAG and on-chain risk — six of them deployed and live.",
+        "Machine Learning and AI Engineer in Lagos: ten projects across payments, fraud, credit risk, forecasting, causal inference, RAG and on-chain risk — seven of them deployed and live.",
         "home", body,
     )
 
