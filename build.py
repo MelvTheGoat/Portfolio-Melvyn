@@ -630,16 +630,17 @@ PROJECTS = [
             "The resume test did not come back bit-identical on the GPUs. Over 200 steps resumed at "
             "step 100, the resumed run's loss differs from the straight run by up to 0.0121 &mdash; "
             "but two <em>straight</em> runs of the identical config differ from each other by up to "
-            "0.0137. The resumed run sits inside the noise two identical runs make on 2×T4 with fp16 "
-            "and DDP, so it is reported as that, not as a pass: the exactness the CPU test guarantees "
-            "does not survive onto the hardware. The benchmark itself ran 14 configurations. "
+            "0.0137, because some GPU kernels add numbers in a varying order. The resume adds nothing "
+            "beyond that run-to-run noise, and the learning rate and loss scale match exactly at every "
+            "step after it &mdash; but it is reported as that, not as a pass: the exactness the CPU "
+            "test guarantees does not survive onto the hardware. The benchmark itself ran 14 configurations. "
             "torch.compile is the largest single lever: 2.6× the throughput at 3M parameters, falling "
             "to 1.5× at 98M, and it roughly halves peak memory at every size (10.96 GB to 5.73 GB at "
             "the smallest). The scaling fit, the architecture ablations, the stability run and "
             "HellaSwag are all still queued, and nothing here says anything about them yet. Every "
             "figure above comes from the run logs on the results branch."
         ),
-        "next": "Run the scaling experiment across the six benchmarked sizes with torch.compile on, fit the power law, and compare it with Chinchilla &mdash; scaling first, because it sets the sizes every later experiment is run at.",
+        "next": "Work through the published experiment plan: about 46 GPU hours across five stages, roughly two to three weeks on Kaggle&rsquo;s free quota, because each stage waits on the one before it. Stage 1 is queued &mdash; an efficiency benchmark and learning-rate sweeps at the three smallest sizes &mdash; because the ablations and the rest of the scaling ladder both need the learning-rate rule it produces. The 98M-parameter run alone is about 16 hours, two sessions with a resume in between.",
         "stack": ["Python", "PyTorch", "torch.compile", "FineWeb-Edu", "tokenizers (BPE)", "DDP", "Kaggle 2×T4", "Hugging Face Hub", "pytest"],
     },
     {
