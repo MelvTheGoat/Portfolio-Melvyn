@@ -23,6 +23,9 @@ CREDIT_LIVE_URL = "https://credit-risk-decisioning-702657773047.europe-west1.run
 PL_LIVE_URL = "https://premier-league-black.vercel.app"
 ARC_LIVE_URL = "https://arc-safe-send.onrender.com"
 UPLIFT_LIVE_URL = "https://melvthegoat.github.io/Uplift-Modelling-Decision/"
+# Fraud detection is live; set this to its URL and the "Live demo" buttons
+# appear on the card and the detail page on their own.
+FRAUD_LIVE_URL = None
 # Set these to the public URL once the deployment is up; every page picks it up
 # automatically and the "Open live demo" button appears. Left as None, the
 # project simply shows its GitHub link instead of claiming a demo that isn't there.
@@ -333,13 +336,13 @@ PROJECTS = [
         "card_pending": False,
         "name": "Sequence-Based Transaction Fraud Detection",
         "short": "Three deep sequence architectures benchmarked against gradient boosting under an explicit cost model, with the sequence models' advantage isolated to robustness under drift specifically.",
-        "tags": ["Deep Learning", "PyTorch", "Fraud", "Calibration"],
-        "status": None,
+        "tags": ["Deep Learning", "PyTorch", "Fraud", "Deployed"],
+        "status": "LIVE",
         "headline_label": "P99 LATENCY",
         "headline_value": "5.1",
         "headline_unit": "ms",
         "github": "https://github.com/MelvTheGoat/Fraud-Detection-With-Sequence-Models",
-        "live": None,
+        "live": FRAUD_LIVE_URL,
         "problem": (
             "Real-time transaction fraud detection needs to catch adaptive fraud patterns &mdash; card "
             "testing, account takeover, merchant compromise &mdash; while staying inside a strict "
@@ -1105,7 +1108,7 @@ def build_home():
           <span class="s-label">Projects built</span>
         </div>
         <div class="stat">
-          <span class="s-value">7</span>
+          <span class="s-value">8</span>
           <span class="s-label">Deployed &amp; live</span>
         </div>
         <div class="stat">
@@ -1148,7 +1151,7 @@ def build_home():
 """
     return page(
         f"{NAME} &mdash; Machine Learning &amp; AI Engineer",
-        "Machine Learning and AI Engineer in Lagos: ten projects across payments, fraud, credit risk, forecasting, causal inference, RAG and on-chain risk — seven of them deployed and live.",
+        "Machine Learning and AI Engineer in Lagos: ten projects across payments, fraud, credit risk, forecasting, causal inference, RAG and on-chain risk — eight of them deployed and live.",
         "home", body,
     )
 
