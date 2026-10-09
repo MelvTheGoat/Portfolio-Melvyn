@@ -23,9 +23,7 @@ CREDIT_LIVE_URL = "https://credit-risk-decisioning-702657773047.europe-west1.run
 PL_LIVE_URL = "https://premier-league-black.vercel.app"
 ARC_LIVE_URL = "https://arc-safe-send.onrender.com"
 UPLIFT_LIVE_URL = "https://melvthegoat.github.io/Uplift-Modelling-Decision/"
-# Fraud detection is live; set this to its URL and the "Live demo" buttons
-# appear on the card and the detail page on their own.
-FRAUD_LIVE_URL = None
+FRAUD_LIVE_URL = "https://fraud-scoring.onrender.com"
 # Set these to the public URL once the deployment is up; every page picks it up
 # automatically and the "Open live demo" button appears. Left as None, the
 # project simply shows its GitHub link instead of claiming a demo that isn't there.
